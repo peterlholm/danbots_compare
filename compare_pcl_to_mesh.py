@@ -27,11 +27,14 @@ def surface_to_pcl(mesh, alg="poisson", point_factor=10):
 
 def cmp(mesh_file, pcl_file):
     "compare a mesh and a pointcloud and return a value for the error"
+    if not mesh_file.exists() or not pcl_file.exists():
+        print("File does not exist", mesh_file, pcl_file)
+        raise Exception("Input not found")
     mesh = o3d.io.read_triangle_mesh(str(mesh_file))
+    print(mesh)
     org = surface_to_pcl(mesh, point_factor=1)
     pcl = o3d.io.read_point_cloud(str(pcl_file))
     if _DEBUG:
-        #print("Input mesh:")
         #mesh_info(mesh)
         print("Points in original", len(org.points))
         print("Point in pointcloud", len(pcl.points))
@@ -42,9 +45,10 @@ def cmp(mesh_file, pcl_file):
 
 if __name__=="__main__":
     files = [('LJ3.stl', 'LJ3.ply'),('LJ3.stl', 'LJ3_face.ply'),('LJ3.stl', 'LJ3_face2.ply'),('t9UJscan.stl', 'LJ3_face2.ply')]
-    #files = [('t9UJscan.stl', 'LJ3_face2.ply')]
+    files = [('t9UJscan.stl', 'LJ3_face2.ply')]
+    BASEDIR = Path(__file__).parent
     for i,o in files:
-        inmesh = Path("testdata/"+i)
-        inpcl = Path('testdata/'+o)
+        inmesh = BASEDIR / "testdata" / i
+        inpcl = BASEDIR / "testdata" / o
         error = cmp(inmesh, inpcl)
         print(f"Stl: {i} pcl: {o} Error: {error:.2e}")
