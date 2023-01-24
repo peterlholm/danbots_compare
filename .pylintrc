@@ -1,0 +1,25 @@
+[MASTER]
+#load-plugins=pylint_django
+
+#django-settings-module=compute.settings
+
+logging-format-style=new
+
+[MESSAGES CONTROL]
+#enable=R,
+#        missing-function-docstring
+
+enable=all
+
+disable=line-too-long
+        #missing-function-docstring,
+        #missing-module-docstring,
+        #missing-class-docstring,
+
+#generated-members=cv2.* o3d.* cv.*
+
+[BASIC]
+
+good-names=i,
+           j,
+        p
