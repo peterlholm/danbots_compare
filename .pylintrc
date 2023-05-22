@@ -17,9 +17,10 @@ disable=line-too-long
         #missing-class-docstring,
 
 #generated-members=cv2.* o3d.* cv.*
-
+generated-members = o3d.*
 [BASIC]
 
 good-names=i,
            j,
-        p
+           s,
+           p
