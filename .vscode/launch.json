@@ -38,7 +38,15 @@
             "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_face.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Show3d med testfiler",
+            "type": "python",
+            "request": "launch",
+            "program": "show_pcl.py",
+            "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_face.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
-
 }
