@@ -7,7 +7,7 @@ import argparse
 import open3d as o3d
 import numpy as np
 
-_DEBUG = True
+_DEBUG = False
 _SHOW = True
 _VERBOSE = True
 
@@ -19,15 +19,12 @@ def stl2pcl(mesh):
 
 def mesh_size(mesh : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
-    print(type(mesh))
     max_size = mesh.get_max_bound()
     min_size = mesh.get_min_bound()
     s = 0
     for i in range(2):
         s += max_size[i] - min_size[i]
     s = s / 3
-    if _DEBUG:
-        print(f"Object size: {s:.2f}")
     return s
 
 def mesh_info(mesh):
@@ -91,21 +88,19 @@ def cmp_stl(mesh_file, pcl_file):
 
 def cmp2pcl(org_pcl, test_pcl):
     "compare 2 pcl a pointcloud and return a value for the error"
-    if _DEBUG:
-        print("Points in reference", len(org_pcl.points))
-        print("Points in testfile", len(test_pcl.points))
+    if _VERBOSE:
+        print("No Points in reference", len(org_pcl.points))
+        print("No Points in testfile", len(test_pcl.points))
     dist = test_pcl.compute_point_cloud_distance(org_pcl)
     distance = np.asarray(dist)
     distance = np.asarray(dist)
     pclerror = np.sqrt(np.mean(distance ** 2))
     if _DEBUG:
-        print("Min:", np.min(distance))
-        print("Max:", np.max(distance))
-        print("Mean:", np.mean(distance))
-        print("MSQ:", pclerror)
-
-    pclerror = np.sqrt(np.mean(distance ** 2))
-    return pclerror
+        print(f"Min error:  {np.min(distance):.5f}")
+        print(f"Max error:  {np.max(distance):.5f}")
+        print(f"Mean error: {np.mean(distance):.5f}")
+        print(f"MSQ:        {pclerror:.5f}")
+    return pclerror, np.min(distance), np.max(distance), np.mean(distance)
 
 def cmp_pcl(org_file, pcl_file):
     "compare a org pcl and a pointcloud and return a value for the error"
@@ -122,19 +117,6 @@ def cmp_pcl(org_file, pcl_file):
     pclerror = np.sqrt(np.mean(distance ** 2))
     return pclerror
 
-
-
-if _DEBUG and False:
-    TESTDIR = Path(__file__).parent / 'testdata'
-    stlfile = TESTDIR / 'LJ3.stl'
-    mymesh = o3d.io.read_triangle_mesh(str(stlfile))
-    pclfile = TESTDIR / 'LJ3.org.ply'
-    #o3d.io.write_point_cloud('org.ply', pcl)
-    mesh_size(mymesh)
-    mesh_info(mymesh)
-    cmp_stl(stlfile, pclfile)
-
-
 if __name__ == "__main__":
     #PICFOLDER = Path(__file__).parent / 'testdata'
     parser = argparse.ArgumentParser(prog='compare3d', description='Compare two 3d files and calculate error figures')
@@ -146,7 +128,6 @@ if __name__ == "__main__":
     if args.d:
         _DEBUG=True
     _VERBOSE = args.v
-    print("Verbose output:", _VERBOSE)
     fil1 = Path(args.org_file)
     fil2 = Path(args.test_file)
     if _VERBOSE:
@@ -158,26 +139,29 @@ if __name__ == "__main__":
     # check file types
 
     if fil1.suffix=='.stl':
-        mesh = o3d.io.read_triangle_mesh(str(fil1))
-        obj_size = mesh_size(mesh)
+        inmesh = o3d.io.read_triangle_mesh(str(fil1))
+        obj_size = mesh_size(inmesh)
         if _VERBOSE:
             print(f"Input object size {obj_size:.2f}")
         #print(mesh_info(mesh))
         #mesh = error = cmp_pcl(fil1, fil2)
-        in_pcl = stl2pcl(mesh)
+        in_pcl = stl2pcl(inmesh)
     else:
         print("Input file type error")
         sys.exit(1)
 
     if fil2.suffix=='.ply':
-        pcl = o3d.io.read_point_cloud(str(fil2))
+        t_pcl = o3d.io.read_point_cloud(str(fil2))
+
         # elif fil1.suffix=='.stl':
     #     error = cmp_stl(fil1, fil2)
     # else:
     #     print("Illegal file type")
     #     sys.exit(1)
     #print(f"Stl: {fil1} pcl: {fil2} Error: {error:.2e}")
-
+    rms, min, max, mean = cmp2pcl(in_pcl, t_pcl)
+    print(f"Point ABS distance Error: RMS: {rms:.5f} Min: {min:.5f} Max: {max:.5f} Mean: {mean:.5f}")
+    print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {min/obj_size*100:.3f}% Max: {max/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
 
 if __name__=="__mainx__":
     BASEDIR = Path(__file__).parent / 'testdata'
@@ -190,8 +174,8 @@ if __name__=="__mainx__":
     # files = [('t9UJscan.stl', 'LJ3_face2.ply')]
     # files = [('LJ3.stl', 'LJ3.ply')]
     files = []
-    for i,o in files:
-        inmesh = BASEDIR / "testdata" / i
-        inpcl = BASEDIR / "testdata" / o
+    for i1,o1 in files:
+        inmesh = BASEDIR / "testdata" / i1
+        inpcl = BASEDIR / "testdata" / o1
         error = cmp_stl(inmesh, inpcl)
-        print(f"Stl: {i} pcl: {o} Error: {error:.2e}")
+        print(f"Stl: {i1} pcl: {o1} Error: {error:.2e}")

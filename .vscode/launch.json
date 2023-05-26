@@ -13,7 +13,25 @@
             "justMyCode": true
         },
         {
+            "name": "Compare3d med ORG testfiler",
+            "type": "python",
+            "request": "launch",
+            "program": "compare_pcl.py",
+            "args": ["testdata/LJ3.stl", "testdata/LJ3.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Compare3d med testfiler",
+            "type": "python",
+            "request": "launch",
+            "program": "compare_pcl.py",
+            "args": ["testdata/LJ3.stl", "testdata/LJ3_face.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Verbose Compare3d med testfiler",
             "type": "python",
             "request": "launch",
             "program": "compare_pcl.py",
