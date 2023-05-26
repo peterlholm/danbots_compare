@@ -159,9 +159,9 @@ if __name__ == "__main__":
     #     print("Illegal file type")
     #     sys.exit(1)
     #print(f"Stl: {fil1} pcl: {fil2} Error: {error:.2e}")
-    rms, min, max, mean = cmp2pcl(in_pcl, t_pcl)
-    print(f"Point ABS distance Error: RMS: {rms:.5f} Min: {min:.5f} Max: {max:.5f} Mean: {mean:.5f}")
-    print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {min/obj_size*100:.3f}% Max: {max/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
+    rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
+    print(f"Point ABS distance Error: RMS: {rms:.5f} Min: {vmin:.5f} Max: {vmax:.5f} Mean: {mean:.5f}")
+    print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
 
 if __name__=="__mainx__":
     BASEDIR = Path(__file__).parent / 'testdata'

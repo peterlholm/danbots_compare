@@ -16,37 +16,48 @@
             "name": "Compare3d med ORG testfiler",
             "type": "python",
             "request": "launch",
-            "program": "compare_pcl.py",
+            "program": "compare3d.py",
             "args": ["testdata/LJ3.stl", "testdata/LJ3.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "Compare3d med testfiler",
+            "name": "Verbose Compare3d med dist testfiler",
             "type": "python",
             "request": "launch",
-            "program": "compare_pcl.py",
-            "args": ["testdata/LJ3.stl", "testdata/LJ3_face.ply"],
+            "program": "compare3d.py",
+            "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_dist.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "Verbose Compare3d med testfiler",
+            "name": "Show3d med dist  testfiler",
             "type": "python",
             "request": "launch",
-            "program": "compare_pcl.py",
-            "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_face.ply"],
+            "program": "show3d.py",
+            "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_dist.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "Show3d med testfiler",
+            "name": "info3d med stl",
             "type": "python",
             "request": "launch",
-            "program": "show_pcl.py",
-            "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_face.ply"],
+            "program": "info3d.py",
+            "args": ["-v","testdata/LJ3.stl"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "info3d med pointcloud",
+            "type": "python",
+            "request": "launch",
+            "program": "info3d.py",
+            "args": ["-v","testdata/LJ3.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         }
+
+
     ]
 }
