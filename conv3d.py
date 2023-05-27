@@ -16,8 +16,9 @@ def obj_info(obj):
     print("Oriented Bounding box",obj.get_oriented_bounding_box())
 
     if isinstance(obj, o3d.geometry.PointCloud):
+        print("Pointcloud")
         if obj.has_points():
-            print(f"Pointcloud with {len(obj.points)} Points")
+            print(f"Obj with {len(obj.points)} Points")
         if obj.has_colors():
             print("Object has colors")
         else:
@@ -26,7 +27,7 @@ def obj_info(obj):
             print("Object has normals")
 
     if isinstance(obj, o3d.geometry.TriangleMesh):
-        print("Vertices", len(obj.vertices))
+        print("TriangleMesh\nVertices", len(obj.vertices))
         if obj.has_vertex_colors():
             print("Object has colors")
         else:
@@ -60,10 +61,10 @@ def mesh_info(mesh):
     print("Oriented Bounding box",mesh.get_oriented_bounding_box())
     print("Vertices", len(mesh.vertices))
 
-def disturb_pcl(ipcl,  dist=2):
+def disturb_pcl(ipcl, dist=2):
     "create pcl with randome error dist"
     def random_error(dist):
-        return random()*dist - dist/2
+        return 2 * random()*dist - dist/2
 
     olist = []
     for p in ipcl.points:
@@ -97,7 +98,7 @@ def surface_to_pcl(mesh, alg="poisson", point_factor=10, points=None):
     return pcl
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Convert 3d files')
+    parser = argparse.ArgumentParser(description='Convert 3d files from stl/pcl to (downsamplet) pointcloudwith noise')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('org_file', help="The original stl or pointcloud")
@@ -142,11 +143,13 @@ if __name__ == "__main__":
         inmesh = o3d.io.read_triangle_mesh(str(fil1))
         if _VERBOSE:
             obj_size = obj_size(inmesh)
-            print(f"Input object size {obj_size:.2f}")
+            print(f"Input object size {obj_size:.2f} m")
             # convert all points
         if npoints is None:
             if _DEBUG:
                 print("include all points")
+            if _VERBOSE:
+                print("generate only vertex point")
             inpcl = stl2pcl(inmesh)
         else:
             print("ALGO", ALGO)
@@ -156,7 +159,7 @@ if __name__ == "__main__":
         inpcl = o3d.io.read_point_cloud(str(fil1))
         if _VERBOSE:
             obj_size = obj_size(inpcl)
-            print(f"Input object size {obj_size:.2f}")
+            print(f"Input object size {obj_size:.2f} m")
     else:
         print("Input file type error")
         sys.exit(1)

@@ -13,6 +13,16 @@
             "justMyCode": true
         },
         {
+            "name": "Show3d med testfiler",
+            "type": "python",
+            "request": "launch",
+            "program": "show3d.py",
+            "args": ["-v","-a", "testdata/testobject/test_object.stl"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
             "name": "Compare3d med ORG testfiler",
             "type": "python",
             "request": "launch",
@@ -26,15 +36,6 @@
             "type": "python",
             "request": "launch",
             "program": "compare3d.py",
-            "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_dist.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Show3d med dist  testfiler",
-            "type": "python",
-            "request": "launch",
-            "program": "show3d.py",
             "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_dist.ply"],
             "console": "integratedTerminal",
             "justMyCode": true

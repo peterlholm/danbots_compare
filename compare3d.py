@@ -2,7 +2,6 @@
 "Compare a pointcloud to mesh"
 import sys
 from pathlib import Path
-from random import random
 import argparse
 import open3d as o3d
 import numpy as np
@@ -33,29 +32,15 @@ def mesh_info(mesh):
     print("Oriented Bounding box",mesh.get_oriented_bounding_box())
     print("Vertices", len(mesh.vertices))
 
-def disturb_pcl(pcl_file, outfile, dist = 2):
-    "create pcl with randome error dist"
-    pcl = o3d.io.read_point_cloud(str(pcl_file))
-    olist = []
-    for p in pcl.points:
-        newp = (p[0]+ dist*random(), p[1]+ dist*random(), p[2]+ dist*random())
-        olist.append(newp)
-    pcd = o3d.geometry.PointCloud()
-    pcd.points = o3d.utility.Vector3dVector(olist)
-    o3d.io.write_point_cloud(str(outfile), pcd)
-
-def surface_to_pcl(mesh, alg="poisson", point_factor=10):
+def surface_to_pcl(mesh, alg="poisson", number_of_points=100000, init_factor=10):
     "convert mesh surfaces to pointcloud, point_factor vertices/points"
     if _DEBUG:
         mesh_info(mesh)
-    no_points = len(mesh.vertices)//point_factor
-    if _DEBUG:
-        print("algorithm poisson", alg=="poisson")
+        print(f"Algoritm: {alg} Number_of_points: {number_of_points} Point_factor: {init_factor}")
     if alg=='poisson':
-        pcl = mesh.sample_points_poisson_disk(number_of_points=no_points)
+        pcl = mesh.sample_points_poisson_disk(number_of_points=number_of_points, )
     else:
-        pcl = mesh.sample_points_uniformly(number_of_points=no_points)
-    #print("Resulting number of points", no_points)
+        pcl = mesh.sample_points_uniformly(number_of_points=number_of_points, init_factor=init_factor)
     return pcl
 
 def cmp_stl(mesh_file, pcl_file):
@@ -76,8 +61,9 @@ def cmp_stl(mesh_file, pcl_file):
         pcl.paint_uniform_color([0.5,0.5,0])
         o3d.visualization.draw_geometries([org,pcl])
     dist = pcl.compute_point_cloud_distance(org)
-    #print(dist)
+    print(dist)
     distance = np.asarray(dist)
+    print(distance)
     pclerror = np.sqrt(np.mean(distance ** 2))
     if _DEBUG:
         print("Min:", np.min(distance))
@@ -92,14 +78,16 @@ def cmp2pcl(org_pcl, test_pcl):
         print("No Points in reference", len(org_pcl.points))
         print("No Points in testfile", len(test_pcl.points))
     dist = test_pcl.compute_point_cloud_distance(org_pcl)
+    #print(dist)
     distance = np.asarray(dist)
-    distance = np.asarray(dist)
+    if _DEBUG:
+        print(distance)
     pclerror = np.sqrt(np.mean(distance ** 2))
     if _DEBUG:
-        print(f"Min error:  {np.min(distance):.5f}")
-        print(f"Max error:  {np.max(distance):.5f}")
-        print(f"Mean error: {np.mean(distance):.5f}")
-        print(f"MSQ:        {pclerror:.5f}")
+        print(f"Min error:  {np.min(distance):.6f} m")
+        print(f"Max error:  {np.max(distance):.6f} m")
+        print(f"Mean error: {np.mean(distance):.6f} m")
+        print(f"RMS:        {pclerror:.6f} m")
     return pclerror, np.min(distance), np.max(distance), np.mean(distance)
 
 def cmp_pcl(org_file, pcl_file):
@@ -142,10 +130,13 @@ if __name__ == "__main__":
         inmesh = o3d.io.read_triangle_mesh(str(fil1))
         obj_size = mesh_size(inmesh)
         if _VERBOSE:
-            print(f"Input object size {obj_size:.2f}")
-        #print(mesh_info(mesh))
-        #mesh = error = cmp_pcl(fil1, fil2)
-        in_pcl = stl2pcl(inmesh)
+            print(f"Input object size {obj_size:.2f} m")
+        in_pcl = surface_to_pcl(inmesh)
+    elif fil1.suffix=='.ply':
+        in_pcl = o3d.io.read_point_cloud(str(fil1))
+        obj_size = mesh_size(in_pcl)
+        if _VERBOSE:
+            print(f"Input object size {obj_size:.2f} m")
     else:
         print("Input file type error")
         sys.exit(1)
@@ -153,29 +144,9 @@ if __name__ == "__main__":
     if fil2.suffix=='.ply':
         t_pcl = o3d.io.read_point_cloud(str(fil2))
 
-        # elif fil1.suffix=='.stl':
-    #     error = cmp_stl(fil1, fil2)
-    # else:
-    #     print("Illegal file type")
-    #     sys.exit(1)
-    #print(f"Stl: {fil1} pcl: {fil2} Error: {error:.2e}")
-    rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
-    print(f"Point ABS distance Error: RMS: {rms:.5f} Min: {vmin:.5f} Max: {vmax:.5f} Mean: {mean:.5f}")
-    print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
+    if _VERBOSE:
+        print(f"input pointcloud with {len(in_pcl.points)}")
 
-if __name__=="__mainx__":
-    BASEDIR = Path(__file__).parent / 'testdata'
-    disturb_pcl(BASEDIR / 'LJ3.ply', BASEDIR / 'LJ3_disturb.ply')
-    error = cmp_pcl(BASEDIR / 'LJ3.ply', BASEDIR / 'LJ3.ply')
-    print(f"Error: {error:.2e}")
-    error = cmp_pcl(BASEDIR / 'LJ3.ply', BASEDIR / 'LJ3_disturb.ply')
-    print(f"Error: {error:.2e}")
-    files = [('LJ3.stl', 'LJ3.ply'),('LJ3.stl', 'LJ3_face.ply'),('LJ3.stl', 'LJ3_face2.ply'),('LJ3.stl', 'LJ3_dist.ply')]
-    # files = [('t9UJscan.stl', 'LJ3_face2.ply')]
-    # files = [('LJ3.stl', 'LJ3.ply')]
-    files = []
-    for i1,o1 in files:
-        inmesh = BASEDIR / "testdata" / i1
-        inpcl = BASEDIR / "testdata" / o1
-        error = cmp_stl(inmesh, inpcl)
-        print(f"Stl: {i1} pcl: {o1} Error: {error:.2e}")
+    rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
+    print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
+    print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
