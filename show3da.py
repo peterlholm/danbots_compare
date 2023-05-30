@@ -3,7 +3,8 @@ import sys
 from pathlib import Path
 import argparse
 import open3d as o3d
-import numpy as np
+#import numpy as np
+
 
 _DEBUG = True
 _VERBOSE=True
