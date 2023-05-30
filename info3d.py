@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 "Info on 3d object"
 import sys
 from pathlib import Path
@@ -19,7 +20,7 @@ def obj_info(obj):
     "print interesting info about mesh"
     print("Bounding box",obj.get_axis_aligned_bounding_box())
     print("Oriented Bounding box",obj.get_oriented_bounding_box())
-    
+
     if isinstance(obj, o3d.geometry.PointCloud):
         if obj.has_points():
             print(f"Pointcloud with {len(obj.points)} Points")
