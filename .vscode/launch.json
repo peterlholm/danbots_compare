@@ -35,7 +35,7 @@
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
-            "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_dist.ply"],
+            "args": ["-v", "-a", "testdata/testobject/render8/point_cloud2.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -54,6 +54,24 @@
             "request": "launch",
             "program": "info3d.py",
             "args": ["-v","testdata/LJ3.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Mirror PointCloud",
+            "type": "python",
+            "request": "launch",
+            "program": "mirror3d.py",
+            "args": ["-v","testdata/testobject/render6/point_cloud2.ply", "testdata/testobject/render6/point_mirror.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "SHOW PointCloud",
+            "type": "python",
+            "request": "launch",
+            "program": "show3da.py",
+            "args": ["-v", "-a", "testdata/testobject/render6/point_mirror.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         }
