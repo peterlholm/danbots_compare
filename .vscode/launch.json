@@ -75,7 +75,17 @@
             "args": ["-v","testdata/testobject/render6/point_cloud2.ply", "testdata/testobject/render6/point_mirror.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
-        }
+        },
+        {
+            "name": "trans3d med testobject.stl",
+            "type": "python",
+            "request": "launch",
+            "program": "trans3d.py",
+            "args": ["-v", "-d",  "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/test_object_p10000_t10.01.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
 
     ]
 }
