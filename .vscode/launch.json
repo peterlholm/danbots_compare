@@ -81,7 +81,7 @@
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-d",  "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/test_object_p10000_t10.01.ply"],
+            "args": ["-v", "-x", "0.001", "-y", "0.001", "-z", "0.001", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_t0.001.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
