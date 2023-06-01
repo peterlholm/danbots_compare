@@ -8,13 +8,13 @@ import open3d as o3d
 
 _DEBUG = True
 _VERBOSE=True
-ZOOM = 1
+ZOOM = 0.5
 CAM_POSITION = (1.0, 1.0, -3.0)
-CAM_POSITION = [5.0, 5.0, 5.0]
+CAM_POSITION = [2.0, 0.1, -3.0]
 
 LOOK_AT = (-0.004, -0.05, 6.0)
 LOOK_AT = (-0.004, -0.05, 6.0)
-UP = (0.0,1.0,0.0)
+UP = (-1.0,0.0,0.0)
 
 def pcl2pic(pcd, outfile):
     "Make a jpg file from pcl"
@@ -27,8 +27,16 @@ def pcl2pic(pcd, outfile):
         vis.add_geometry(obj)
 
     ctr = vis.get_view_control()
+    print(ctr)
     if ctr is None:
         print("pcl2jpg cant get view_control", vis)
+
+    #ctr.rotate(10.0, 0.0)
+    #vis.run()
+    # print(ctr.get_field_of_view())
+    # ctr.change_field_of_view(step=1)
+    # print(ctr.get_field_of_view())
+
     # parameters = o3d.io.read_pinhole_camera_parameters("camera_parameters.json")
     # ok = ctr.convert_from_pinhole_camera_parameters(parameters)
     # print(parameters.extrinsic)
@@ -40,9 +48,10 @@ def pcl2pic(pcd, outfile):
     ctr.set_front(CAM_POSITION)
     #ctr.set_lookat(LOOK_AT)
     ctr.set_up(UP)
-    #ctr.set_zoom(ZOOM)
+    ctr.set_zoom(ZOOM)
     #render
 
+    ctr.rotate(10.0, 0.0)
 
     opt = vis.get_render_option()
     # opt.point_size = 2.0

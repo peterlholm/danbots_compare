@@ -5,13 +5,33 @@ from pathlib import Path
 import argparse
 import open3d as o3d
 
+_DEBUG = True
 _VERBOSE=True
+ZOOM = 0.6
+CAM_POSITION = [2.0, 0.1, -3]
+LOOK_AT = (-0.004, -0.05, 6.0)
+UP = (-1.0, 0.0, 0.0)
 
-def show_objects(obj):
-    "Show the object list"
-    #o3d.visualization.draw_geometries(obj, window_name="Navn", width=1000, height=1000)
-    o3d.visualization.draw_geometries(obj, window_name="Navn", width=1000, height=1000,
-                                      zoom=1.3, front=[0, 2,-10], lookat=[-0.004, -0.05, 6], up=[0,1,0])
+
+def surface_to_pcl(mesh, alg="poisson", no_points=10000):
+    "convert mesh surfaces to pointcloud, point_factor vertices/points"
+    # if _DEBUG:
+    #     mesh_info(mesh)
+    # if not points is None:
+    #     no_points = points
+    # else:
+    #     no_points = len(mesh.vertices)//point_factor
+    if _DEBUG:
+        print("ALGOrithm poisson", alg=="poisson")
+    if alg=='poisson':
+        pcl = mesh.sample_points_poisson_disk(number_of_points=no_points)
+    elif alg=='uniformly':
+        pcl = mesh.sample_points_uniformly(number_of_points=no_points)
+    else:
+        print("unknown sampling")
+        sys.exit(2)
+    #print("Resulting number of points", no_points)
+    return pcl
 
 def obj_size(obj : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
@@ -25,31 +45,55 @@ def obj_size(obj : o3d.geometry.TriangleMesh):
 
 def show_objects(obj, name=""):
     "Show the object list"
-    o3d.visualization.draw_geometries(obj, window_name=name, width=1000, height=1000)
-                                  #zoom=0.3412,
-                                  #zoom=0.63,
-                                  #front=[0.4257, -0.2125, -0.8795],
-                                  #front=[-10, 0, -40.8795],
-                                  #lookat=[2.6172, 2.0475, 1.532],
-                                  #lookat=[0, 0, 6],
-                                  #lookat=[0, 0, 10.532],
-                                  #up=[-0.0694, -0.9768, 0.2024])
-                                  #up=[-10.0694, 0, 0.0])
+    o3d.visualization.draw_geometries(obj, window_name=name, width=1000, height=1000,
+                                       zoom=ZOOM, front=CAM_POSITION, lookat=LOOK_AT, up=[0,1,0])
 
+def pcl2pic(objects, name="", outfile=None):
+    "Make a jpg file from pcl"
+    obj_center = objects[0].get_center()
+    ob_size = obj_size(objects[0])
+    vis = o3d.visualization.Visualizer()
+    res = vis.create_window(visible = _DEBUG, window_name=name, width=1000, height=1000)
+    if not res:
+        print("create window result", res)
+    for obj in objects:
+        vis.add_geometry(obj)
+    ctr = vis.get_view_control()
+    if ctr is None:
+        print("pcl2jpg cant get view_control", vis)
+    if _DEBUG:
+        print('object center', obj_center, "object size", ob_size)
+        print("cam position:", CAM_POSITION, "zoom", ZOOM)
+    ctr.set_front(CAM_POSITION)
+    #ctr.set_lookat(LOOK_AT)
+    ctr.set_lookat(obj_center)
+    ctr.set_up(UP)
+    ctr.set_zoom(ZOOM)
+    ctr.set_front([2.0, 0.1, -3])
 
+    #render
+    opt = vis.get_render_option()
+    opt.point_size = 2.0
+    vis.run()
+    if outfile:
+        if _DEBUG:
+            print(f"Witing to outfile {outfile}")
+        vis.capture_screen_image("ud.png", do_render=True)
 
 if __name__ == "__main__":
     #PICFOLDER = Path(__file__).parent / 'testdata'
     parser = argparse.ArgumentParser(prog='show3d', description='Show one/two 3d files')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
-    parser.add_argument('-a-', '--axis', required=False, help="Show coord system", action='store_true')
-    parser.add_argument('-a', '--axis', required=False, help="Add coord axis", action="store_true")
+    parser.add_argument('-a', '--axis', required=False, help="Show coord system", action='store_true')
     parser.add_argument('-c', '--color', required=False, help="Add Collor to object", action="store_true")
+    parser.add_argument('-nc', '--no_color', required=False, help="Add black color to obj", action="store_true")
+    parser.add_argument('-w', "--write", action="store", type=str, required=False, help="Save image to file", metavar="imagefilename")
     parser.add_argument('file1', help="The first stl or pointcloud")
     parser.add_argument('file2', nargs="?", help="The second stl or pointcloud")
     parser.add_argument('file3', nargs="*", help="More stl or pointcloud")
     args = parser.parse_args()
+
     _DEBUG=args.d
     _VERBOSE = args.v
     if _DEBUG:
@@ -64,67 +108,69 @@ if __name__ == "__main__":
         sys.exit(1)
     # check file types
 
-    objects = []
+    vobjects = []
 
     if fil1.suffix=='.stl':
-        mesh = o3d.io.read_triangle_mesh(str(fil1))
+        mymesh = o3d.io.read_triangle_mesh(str(fil1))
         # if not mesh.has_triangle_colors():
         if args.color:
-            mesh.paint_uniform_color((0,1,0))
-        if not mesh.has_vertex_normals():
+            mymesh.paint_uniform_color((0,1,0))
+        if not mymesh.has_vertex_normals():
             print("add normals")
-            mesh.compute_vertex_normals()
-        if not mesh.has_triangle_normals():
-            mesh.compute_triangle_normals()
-        size = obj_size(mesh)
-        objects.append(mesh)
+            mymesh.compute_vertex_normals()
+        if not mymesh.has_triangle_normals():
+            mymesh.compute_triangle_normals()
+        size = obj_size(mymesh)
+        mypcl = surface_to_pcl(mymesh)
+        vobjects.append(mypcl)
         #in_pcl = stl2pcl(mesh)
     elif fil1.suffix=='.ply':
-        pcl = o3d.io.read_point_cloud(str(fil1))
+        mypcl = o3d.io.read_point_cloud(str(fil1))
         if args.color:
-            pcl.paint_uniform_color((0,1,0))
-        size = obj_size(pcl)
-        objects.append(pcl)
+            mypcl.paint_uniform_color((0,1,0))
+        if args.no_color:
+            mypcl.paint_uniform_color((0,0,0))
+        size = obj_size(mypcl)
+        vobjects.append(mypcl)
     else:
         print("Input file type error")
         sys.exit(1)
-
     window_name = fil1.name
-
     if args.file2:
         fil2 = Path(args.file2)
         if fil2.suffix=='.ply':
             pcl2 = o3d.io.read_point_cloud(str(fil2))
             if args.color:
                 pcl2.paint_uniform_color((1,0,0))
-            objects.append(pcl2)
+            vobjects.append(pcl2)
         elif fil1.suffix=='.stl':
             mesh2 = o3d.io.read_triangle_mesh(str(fil2))
             if args.color:
                 mesh2.paint_uniform_color((1,0,0))
-            objects.append(mesh2)
+            vobjects.append(mesh2)
         else:
             print("Illegal file2 type")
             sys.exit(1)
+        window_name += " - " + fil2.name
+
     if _VERBOSE:
-        print("Object center", objects[0].get_center())
-    #print(f"fil1: {fil1} fil2: {fil2}")
+        print("Object center", vobjects[0].get_center())
+
     if args.axis:
         ax = o3d.geometry.TriangleMesh.create_coordinate_frame()
-        objects.append(ax)
-    print(objects)
-    show_objects(objects)
-        window_name += " - " + fil2.name
+        vobjects.append(ax)
+
+    #show_objects(objects)
 
     for file in args.file3:
         fil = Path(file)
         print(fil.name)
         if fil.suffix=='.ply':
             pcl_n = o3d.io.read_point_cloud(str(fil))
-            objects.append(pcl_n)
+            vobjects.append(pcl_n)
         elif fil.suffix=='.stl':
             mesh_n = o3d.io.read_triangle_mesh(str(fil))
-            objects.append(mesh2)
+            vobjects.append(mesh2)
         else:
             print("Illegal file2 type")
             sys.exit(1)
@@ -138,7 +184,9 @@ if __name__ == "__main__":
         else:
             ASIZE = 0.01
         coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=ASIZE,origin=(0,0,0))
-        objects.append(coord)
+        vobjects.append(coord)
     if _DEBUG:
-        print(objects)
-    show_objects(objects, name=window_name)
+        print(vobjects)
+    #show_objects(objects, name=window_name)
+    #print(args.write)
+    pcl2pic(vobjects, name=window_name, outfile=args.write)

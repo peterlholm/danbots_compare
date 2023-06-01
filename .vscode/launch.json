@@ -17,11 +17,10 @@
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
-            "args": ["-v","-a", "testdata/testobject/test_object.stl"],
+            "args": ["-v", "-a", "-w", "ud.png", "-d", "testdata/testobject/wand/render6/point_mirror.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
-
         {
             "name": "Compare3d med ORG testfiler",
             "type": "python",
@@ -81,9 +80,9 @@
             "type": "python",
             "request": "launch",
             "program": "show3da.py",
-            "args": ["-v", "-a", "testdata/testobject/render6/point_mirror.ply"],
+            "args": ["-v", "-a", "testdata/testobject/wand/render6/point_mirror.ply"],
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": false
         }
 
 
