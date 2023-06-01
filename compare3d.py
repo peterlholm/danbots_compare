@@ -74,7 +74,7 @@ def cmp_stl(mesh_file, pcl_file):
 
 def cmp2pcl(org_pcl, test_pcl):
     "compare 2 pcl a pointcloud and return a value for the error"
-    if _VERBOSE:
+    if _DEBUG:
         print("No Points in reference", len(org_pcl.points))
         print("No Points in testfile", len(test_pcl.points))
     dist = test_pcl.compute_point_cloud_distance(org_pcl)
@@ -145,8 +145,12 @@ if __name__ == "__main__":
         t_pcl = o3d.io.read_point_cloud(str(fil2))
 
     if _VERBOSE:
-        print(f"input pointcloud with {len(in_pcl.points)}")
+        print("Points in reference", len(in_pcl.points))
+        print("Points in testfile", len(t_pcl.points))
 
     rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
     print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
+    if _DEBUG:
+        print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")
+        
     print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")

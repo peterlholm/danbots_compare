@@ -43,7 +43,12 @@ def obj_size(obj : o3d.geometry.TriangleMesh):
     s = s / 3
     return s
 
-def show_objects(obj, name=""):
+
+def show_objects(objlist, name=""):
+    "Show the object list"
+    o3d.visualization.draw_geometries(objlist, window_name=name, width=1000, height=1000)
+
+def show_objects_test(obj, name=""):
     "Show the object list"
     o3d.visualization.draw_geometries(obj, window_name=name, width=1000, height=1000,
                                        zoom=ZOOM, front=CAM_POSITION, lookat=LOOK_AT, up=[0,1,0])
@@ -73,7 +78,7 @@ def pcl2pic(objects, name="", outfile=None):
 
     #render
     opt = vis.get_render_option()
-    opt.point_size = 2.0
+    opt.point_size = 3.0
     vis.run()
     if outfile:
         if _DEBUG:
@@ -89,9 +94,10 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--color', required=False, help="Add Collor to object", action="store_true")
     parser.add_argument('-nc', '--no_color', required=False, help="Add black color to obj", action="store_true")
     parser.add_argument('-w', "--write", action="store", type=str, required=False, help="Save image to file", metavar="imagefilename")
+    parser.add_argument('-r', action="store_true",required=False, help="Show with auto camera")
     parser.add_argument('file1', help="The first stl or pointcloud")
     parser.add_argument('file2', nargs="?", help="The second stl or pointcloud")
-    parser.add_argument('file3', nargs="*", help="More stl or pointcloud")
+    #parser.add_argument('file3', nargs="*", help="More stl or pointcloud")
     args = parser.parse_args()
 
     _DEBUG=args.d
@@ -101,7 +107,7 @@ if __name__ == "__main__":
 
     fil1 = Path(args.file1)
     if _VERBOSE:
-        print(f"Showing {fil1}")
+        print(f"Showing: {fil1}")
     # check files exists
     if not fil1.exists():
         print(f"input file {fil1} does not exist")
@@ -135,6 +141,7 @@ if __name__ == "__main__":
     else:
         print("Input file type error")
         sys.exit(1)
+
     window_name = fil1.name
     if args.file2:
         fil2 = Path(args.file2)
@@ -155,38 +162,34 @@ if __name__ == "__main__":
 
     if _VERBOSE:
         print("Object center", vobjects[0].get_center())
-
-    if args.axis:
-        ax = o3d.geometry.TriangleMesh.create_coordinate_frame()
-        vobjects.append(ax)
-
-    #show_objects(objects)
-
-    for file in args.file3:
-        fil = Path(file)
-        print(fil.name)
-        if fil.suffix=='.ply':
-            pcl_n = o3d.io.read_point_cloud(str(fil))
-            vobjects.append(pcl_n)
-        elif fil.suffix=='.stl':
-            mesh_n = o3d.io.read_triangle_mesh(str(fil))
-            vobjects.append(mesh2)
-        else:
-            print("Illegal file2 type")
-            sys.exit(1)
-        window_name += " - " + fil.name
-    if _VERBOSE:
         print(f"Object size: {size} m")
+
+    # for file in args.file3:
+    #     fil = Path(file)
+    #     print(fil.name)
+    #     if fil.suffix=='.ply':
+    #         pcl_n = o3d.io.read_point_cloud(str(fil))
+    #         vobjects.append(pcl_n)
+    #     elif fil.suffix=='.stl':
+    #         mesh_n = o3d.io.read_triangle_mesh(str(fil))
+    #         vobjects.append(mesh2)
+    #     else:
+    #         print("Illegal file2 type")
+    #         sys.exit(1)
+    #     window_name += " - " + fil.name
 
     if args.axis:
         if size > 1:
             ASIZE = 1
         else:
             ASIZE = 0.01
+        print(ASIZE)
         coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=ASIZE,origin=(0,0,0))
         vobjects.append(coord)
     if _DEBUG:
+        print("Number of objects:", len(vobjects))
         print(vobjects)
-    #show_objects(objects, name=window_name)
-    #print(args.write)
-    pcl2pic(vobjects, name=window_name, outfile=args.write)
+    if args.r:
+        show_objects(vobjects)
+    else:
+        pcl2pic(vobjects, name=window_name, outfile=args.write)

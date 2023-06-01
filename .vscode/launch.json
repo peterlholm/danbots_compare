@@ -13,11 +13,20 @@
             "justMyCode": true
         },
         {
-            "name": "Show3d med testfiler",
+            "name": "Show3d med wand testfil",
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
-            "args": ["-v", "-a", "-w", "ud.png", "-d", "testdata/testobject/wand/render6/point_mirror.ply"],
+            "args": ["-v", "-a", "-d", "testdata/testobject/wand/render6/point_mirror.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Show3d med testobject.stl",
+            "type": "python",
+            "request": "launch",
+            "program": "show3d.py",
+            "args": ["-v", "-a", "-d", "-r", "testdata/testobject/obj1/test_object.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -26,7 +35,7 @@
             "type": "python",
             "request": "launch",
             "program": "compare3d.py",
-            "args": ["testdata/LJ3.stl", "testdata/LJ3.ply"],
+            "args": ["-v", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/test_object_p10000.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -40,6 +49,16 @@
             "justMyCode": true
         },
         {
+            "name": "conv3d med testobject.stl",
+            "type": "python",
+            "request": "launch",
+            "program": "conv3d.py",
+            "args": ["-v", "-d", "-n", "1000000", "-u", "testdata/testobject/obj1/test_object.stl", "testdata/testobject/obj1/test_object_1M.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
             "name": "Show3d med dist  testfiler",
             "type": "python",
             "request": "launch",
@@ -48,25 +67,7 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
-        {
-            "name": "info3d med stl",
-            "type": "python",
-            "request": "launch",
-            "program": "info3d.py",
-            "args": ["-v","testdata/LJ3.stl"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "info3d med pointcloud",
-            "type": "python",
-            "request": "launch",
-            "program": "info3d.py",
-            "args": ["-v","testdata/LJ3.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
+         {
             "name": "Mirror PointCloud",
             "type": "python",
             "request": "launch",
@@ -74,17 +75,7 @@
             "args": ["-v","testdata/testobject/render6/point_cloud2.ply", "testdata/testobject/render6/point_mirror.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
-        },
-        {
-            "name": "SHOW PointCloud",
-            "type": "python",
-            "request": "launch",
-            "program": "show3da.py",
-            "args": ["-v", "-a", "testdata/testobject/wand/render6/point_mirror.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": false
         }
-
 
     ]
 }
