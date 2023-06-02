@@ -7,14 +7,8 @@ import open3d as o3d
 import numpy as np
 
 _DEBUG = False
-_SHOW = True
-_VERBOSE = True
-
-def stl2pcl(mesh):
-    "create pointcloud from vertices in stl"
-    pcd = o3d.geometry.PointCloud()
-    pcd.points = mesh.vertices
-    return pcd
+_SHOW = False
+_VERBOSE = False
 
 def mesh_size(mesh : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
@@ -43,34 +37,15 @@ def surface_to_pcl(mesh, alg="poisson", number_of_points=100000, init_factor=10)
         pcl = mesh.sample_points_uniformly(number_of_points=number_of_points, init_factor=init_factor)
     return pcl
 
-def cmp_stl(mesh_file, pcl_file):
-    "compare a mesh and a pointcloud and return a value for the error"
-    if not mesh_file.exists() or not pcl_file.exists():
-        print("File does not exist", mesh_file, pcl_file)
-        raise FileNotFoundError("Input not found")
-    mesh = o3d.io.read_triangle_mesh(str(mesh_file))
-    org = stl2pcl(mesh)
-    #org = surface_to_pcl(mesh, point_factor=1)
-    pcl = o3d.io.read_point_cloud(str(pcl_file))
-    if _DEBUG:
-        #mesh_info(mesh)
-        print("Points in reference", len(org.points))
-        print("Points in pointcloud", len(pcl.points))
-    if _SHOW:
-        org.paint_uniform_color([0,0,1])
-        pcl.paint_uniform_color([0.5,0.5,0])
-        o3d.visualization.draw_geometries([org,pcl])
-    dist = pcl.compute_point_cloud_distance(org)
-    print(dist)
-    distance = np.asarray(dist)
-    print(distance)
-    pclerror = np.sqrt(np.mean(distance ** 2))
-    if _DEBUG:
-        print("Min:", np.min(distance))
-        print("Max:", np.max(distance))
-        print("Mean:", np.mean(distance))
-        print("MSQ:", pclerror)
-    return pclerror, np.min(distance), np.max(distance), np.mean(distance)
+def show_pcls(pcl1, pcl2, axis=False):
+    "show pointcloud on screen"
+    pcl1.paint_uniform_color([0,1,0])
+    pcl2.paint_uniform_color([0.1,0.0,0])
+    objects = [pcl1, pcl2]
+    if axis:
+        axi = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.01, origin=(0,0,0))
+        objects.append(axi)
+    o3d.visualization.draw_geometries(objects)
 
 def cmp2pcl(org_pcl, test_pcl):
     "compare 2 pcl a pointcloud and return a value for the error"
@@ -90,31 +65,18 @@ def cmp2pcl(org_pcl, test_pcl):
         print(f"RMS:        {pclerror:.6f} m")
     return pclerror, np.min(distance), np.max(distance), np.mean(distance)
 
-def cmp_pcl(org_file, pcl_file):
-    "compare a org pcl and a pointcloud and return a value for the error"
-    if not org_file.exists() or not pcl_file.exists():
-        print("File does not exist", org_file, pcl_file)
-        sys.exit(1)
-    org = o3d.io.read_point_cloud(str(org_file))
-    pcl = o3d.io.read_point_cloud(str(pcl_file))
-    if _DEBUG:
-        print("Points in reference", len(org.points))
-        print("Points in testfile", len(pcl.points))
-    dist = pcl.compute_point_cloud_distance(org)
-    distance = np.asarray(dist)
-    pclerror = np.sqrt(np.mean(distance ** 2))
-    return pclerror
-
 if __name__ == "__main__":
-    #PICFOLDER = Path(__file__).parent / 'testdata'
     parser = argparse.ArgumentParser(prog='compare3d', description='Compare two 3d files and calculate error figures')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
-    parser.add_argument('org_file', help="The original stl or pointcloud")
-    parser.add_argument('test_file', help="The pointcloud to be measured")
+    parser.add_argument('-s', required=False, help="Show output", action='store_true' )
+    parser.add_argument('-a', required=False, help="Show axis", action='store_true' )
+    parser.add_argument('org_file', help="The reference stl or pointcloud")
+    parser.add_argument('test_file', help="The test pointcloud to be measured")
     args = parser.parse_args()
     if args.d:
         _DEBUG=True
+    _SHOW = args.s
     _VERBOSE = args.v
     fil1 = Path(args.org_file)
     fil2 = Path(args.test_file)
@@ -124,19 +86,11 @@ if __name__ == "__main__":
     if not fil1.exists() or not fil2.exists():
         print("input file(s) does not exist")
         sys.exit(1)
-    # check file types
-
     if fil1.suffix=='.stl':
         inmesh = o3d.io.read_triangle_mesh(str(fil1))
-        obj_size = mesh_size(inmesh)
-        if _VERBOSE:
-            print(f"Input object size {obj_size:.2f} m")
         in_pcl = surface_to_pcl(inmesh)
     elif fil1.suffix=='.ply':
         in_pcl = o3d.io.read_point_cloud(str(fil1))
-        obj_size = mesh_size(in_pcl)
-        if _VERBOSE:
-            print(f"Input object size {obj_size:.2f} m")
     else:
         print("Input file type error")
         sys.exit(1)
@@ -144,12 +98,19 @@ if __name__ == "__main__":
     if fil2.suffix=='.ply':
         t_pcl = o3d.io.read_point_cloud(str(fil2))
 
+    obj_size = mesh_size(in_pcl)
+
     if _VERBOSE:
+        print(f"Reference object size {obj_size:.2f} m")
+        print(f"Test object size {mesh_size(t_pcl):.2f} m")
         print("Points in reference", len(in_pcl.points))
         print("Points in testfile", len(t_pcl.points))
 
     rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
     print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
     if _DEBUG:
-        print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")   
+        print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")
     print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
+
+    if _SHOW:
+        show_pcls(in_pcl, t_pcl, axis=args.a)

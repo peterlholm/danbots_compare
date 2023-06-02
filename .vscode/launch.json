@@ -13,11 +13,30 @@
             "justMyCode": true
         },
         {
-            "name": "Show3d med wand testfil",
+            "name": "Compare3d ORG med downsamplet org",
+            "type": "python",
+            "request": "launch",
+            "program": "compare3d.py",
+            "args": ["-v", "-s", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/test_object_p10000.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Compare3d org med wand",
+            "type": "python",
+            "request": "launch",
+            "program": "compare3d.py",
+            "args": ["-v", "-a", "-d", "-s", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/trans/wand.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
+            "name": "Show3d med wand testfil and org",
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "testdata/testobject/wand/render6/point_mirror.ply"],
+            "args": ["-v", "-a", "-d", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/trans/wand.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -30,16 +49,7 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
-        {
-            "name": "Compare3d med ORG testfiler",
-            "type": "python",
-            "request": "launch",
-            "program": "compare3d.py",
-            "args": ["-v", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/test_object_p10000.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
+         {
             "name": "Verbose Compare3d med dist testfiler",
             "type": "python",
             "request": "launch",
@@ -81,7 +91,25 @@
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-x", "0.001", "-y", "0.001", "-z", "0.001", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_t0.001.ply"],
+            "args": ["-v", "-s", "-a", "-x", "-0.021", "-y", "-0.01", "-z", "0.1", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_tx-0.021y-0.01z0.1.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "trans3d rotation testobject.stl",
+            "type": "python",
+            "request": "launch",
+            "program": "trans3d.py",
+            "args": ["-v", "-a", "-s", "-rx", "0.1", "-ry", "0.2", "-rz", "0.3", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_rxyz-0.1.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "trans3d scale wand",
+            "type": "python",
+            "request": "launch",
+            "program": "trans3d.py",
+            "args": ["-v", "-a", "--scale", "0.01", "testdata/testobject/wand/render6/point_mirror.ply", "testdata/testobject/obj1/trans/wand.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },

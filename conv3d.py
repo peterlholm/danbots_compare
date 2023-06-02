@@ -9,7 +9,6 @@ import open3d as o3d
 _DEBUG = False
 _VERBOSE = True
 
-
 def obj_info(obj):
     "print interesting info about mesh"
     print("Bounding box",obj.get_axis_aligned_bounding_box())
@@ -77,28 +76,19 @@ def disturb_pcl(ipcl, dist=2):
         pcd.colors = o3d.utility.Vector3dVector(ipcl.colors)
     return pcd
 
-def surface_to_pcl(mesh, alg="poisson", point_factor=10, points=None):
+def surface_to_pcl(mesh, alg="poisson", points=1000000):
     "convert mesh surfaces to pointcloud, point_factor vertices/points"
-    if _DEBUG:
-        mesh_info(mesh)
-    if not points is None:
-        no_points = points
-    else:
-        no_points = len(mesh.vertices)//point_factor
-    if _DEBUG:
-        print("ALGOrithm poisson", alg=="poisson")
     if alg=='poisson':
-        pcl = mesh.sample_points_poisson_disk(number_of_points=no_points)
+        pcl = mesh.sample_points_poisson_disk(number_of_points=points)
     elif alg=='uniformly':
-        pcl = mesh.sample_points_uniformly(number_of_points=no_points)
+        pcl = mesh.sample_points_uniformly(number_of_points=points)
     else:
         print("unknown sampling")
         sys.exit(2)
-    #print("Resulting number of points", no_points)
     return pcl
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Convert 3d files from stl/pcl to (downsamplet) pointcloudwith noise')
+    parser = argparse.ArgumentParser(description='Convert 3d files from stl/pcl to (downsamplet) pointcloud with noise')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('org_file', help="The original stl or pointcloud")
@@ -108,14 +98,13 @@ if __name__ == "__main__":
     parser.add_argument('-u', required=False, help="Use Uniformly sampling", action='store_true' )
     parser.add_argument('-z', required=False, default=None, type=float, help="Add nn NOISE", action='store' )
     args = parser.parse_args()
+
     _VERBOSE = args.v
-    if args.d:
-        _DEBUG=True
-    if _DEBUG:
-        _VERBOSE=True
+    _DEBUG = args.d
+
     fil1 = Path(args.org_file)
     fil2 = Path(args.out_file)
-    npoints = args.n
+    #npoints = args.n
     ALGO = "poisson"
     if args.p:
         ALGO = "poisson"
@@ -124,15 +113,12 @@ if __name__ == "__main__":
     NOISE = 0
     if args.z:
         NOISE = args.z
-
     if _VERBOSE:
-        print(f"Converting {fil1} to {fil2} with {npoints} points, {ALGO} with NOISE: {NOISE}")
-
+        print(f"Converting {fil1} to {fil2} with {args.n} points, {ALGO} with NOISE: {NOISE}")
     # check files exists
     if not fil1.exists():
-        print("input file(s) does not exist")
+        print(f"Input file {fil1} does not exist")
         sys.exit(1)
-
     # check file types
     if fil2.suffix != '.ply':
         print("only convertion to pointcloud supported")
@@ -141,29 +127,20 @@ if __name__ == "__main__":
     if fil1.suffix=='.stl':
         # stl input
         inmesh = o3d.io.read_triangle_mesh(str(fil1))
-        if _VERBOSE:
-            obj_size = obj_size(inmesh)
-            print(f"Input object size {obj_size:.2f} m")
-            # convert all points
-        if npoints is None:
-            if _DEBUG:
-                print("include all points")
-            if _VERBOSE:
-                print("generate only vertex point")
-            inpcl = stl2pcl(inmesh)
+        if args.n is None:
+            npoints=10000
         else:
-            print("ALGO", ALGO)
-            inpcl = surface_to_pcl(inmesh, points=npoints, alg=ALGO)
+            npoints = args.n
+        inpcl = surface_to_pcl(inmesh, points=npoints, alg=ALGO)
     elif fil1.suffix=='.ply':
         # pcl imput
         inpcl = o3d.io.read_point_cloud(str(fil1))
-        if _VERBOSE:
-            obj_size = obj_size(inpcl)
-            print(f"Input object size {obj_size:.2f} m")
     else:
         print("Input file type error")
         sys.exit(1)
+
     if _VERBOSE:
+        print("Object size", obj_size(inpcl))
         obj_info(inpcl)
     #all convertions done - write file
     if NOISE>0:
