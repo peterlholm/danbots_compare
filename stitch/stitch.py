@@ -47,6 +47,30 @@ def mesh_info(mesh):
     print("Oriented Bounding box",mesh.get_oriented_bounding_box())
     print("Vertices", len(mesh.vertices))
 
+
+
+def draw_registration_result(reference, test_source, transformation, axis=False, window_name="registration result", color=False):
+    "Debug draw registration result"
+    reference_temp = copy.deepcopy(reference)
+    test_temp = copy.deepcopy(test_source)
+    if color:
+        reference_temp.paint_uniform_color([0, 0.7, 0.1])
+        test_temp.paint_uniform_color([1, 0.0, 0.1])
+    test_temp.transform(transformation)
+    pointclouds =[reference_temp, test_temp]
+    if axis:
+        axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1, origin=[0, 0, 0])
+        pointclouds.append(axis_pcd)
+    o3d.visualization.draw_geometries(pointclouds, window_name=window_name)
+
+
+def trans_file(in_pcl, outfile, transformation):
+    "transform and write file with transformation"
+    #in_pcl = o3d.io.read_point_cloud(str(infile))
+    in_pcl.transform(transformation)
+    o3d.io.write_point_cloud(str(outfile), in_pcl)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='stitch3d', description='Stitch two 3d files and calculate error figures')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
@@ -85,4 +109,9 @@ if __name__ == "__main__":
     if args.test_file.suffix=='.ply':
         t_pcl = o3d.io.read_point_cloud(str(args.test_file))
 
-    rstitch(in_pcl, t_pcl)
+    transform = rstitch(in_pcl, t_pcl)
+    print("Transformation:", transform)
+    if transform is None:
+        print("No transformation can be found")
+        sys.exit(2)
+    trans_file(t_pcl, "out.ply", transform)

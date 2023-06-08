@@ -65,8 +65,11 @@ def rstitch(reference, new):
         print(f"Test:      {len(new.points):8} Points, Color: {reference.has_colors()}")
         color = True
     if color:
-        reference.paint_uniform_color((1,0,0))
-        new.paint_uniform_color((0,1,0))
+        reference.paint_uniform_color((0,1,0))
+        new.paint_uniform_color((1,0,0))
+    
+    if _DEBUG:
+        show_objects([reference, new], name="Original clouds")
     if False:   # cleaning
         print("start cleaning")
         c_org = clean_point_cloud(reference)
@@ -84,4 +87,4 @@ def rstitch(reference, new):
     print("Transformation", transformation)
     # objects = [ org, new]
     # show_objects(objects)
-    return
+    return transformation

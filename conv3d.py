@@ -63,7 +63,7 @@ def mesh_info(mesh):
 def disturb_pcl(ipcl, dist=2):
     "create pcl with randome error dist"
     def random_error(dist):
-        return 2 * random()*dist - dist/2
+        return 2 * random()*dist - dist
 
     olist = []
     for p in ipcl.points:

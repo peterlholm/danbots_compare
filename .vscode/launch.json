@@ -113,6 +113,66 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Stitch",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch/stitch.py",
+            "args": ["-v", "-d", "testdata/testobject/obj1/wand/render6/point_mirror.ply", "testdata/testobject/obj1/trans/wand.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Stitch test - ens",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch/stitch.py",
+            "args": ["-v",
+                "testdata/testobject/obj1/test_object_p1M.ply",
+                "testdata/testobject/obj1/test_object_p10K.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Stitch ERROR",
+            "type": "python",
+            "request": "launch",
+            "program": "compare3d.py",
+            "args": ["-v",
+                "testdata/testobject/obj1/test_object_p1M.ply",
+                "out.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
+            "name": "Stitch test - 0.001",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch/stitch.py",
+            "args": ["-v",
+                "testdata/testobject/obj1/test_object_p1M.ply",
+                "testdata/testobject/obj1/trans/test_object_p10000_rxyz-0.1.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+       {
+            "name": "Stitch rot trans",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch/stitch.py",
+            "args": ["-v", "-d",
+                "testdata/testobject/obj1/test_object_p1M.ply",
+                "testdata/testobject/obj1/distort/rot_trans_dist_0.0001.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+
+
 
 
     ]

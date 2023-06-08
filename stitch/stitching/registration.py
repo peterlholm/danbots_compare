@@ -113,11 +113,13 @@ def get_transformations(ref, test_target, voxel_size):
             voxel_size, result_ransac.transformation)
     if _DEBUG:
         print("Local transformation matrix", result_icp, np.around(result_icp.transformation,3))
-        draw_registration_result(ref_down, test_down, result_icp.transformation, window_name="Local registration")
+        draw_registration_result(ref_down, test_down, result_icp.transformation, window_name="Local registration downsample")
     if result_icp.fitness < LOCAL_FITNESS or result_icp.inlier_rmse >LOCAL_RMSE:
         print("BAD LOCAL REGISTRATION", result_icp)
+        return None, None
 
- 
+    draw_registration_result(ref, test_target, result_icp.transformation, window_name="Local registration originals")
+
     transformation = result_icp.transformation
 
     # test_down.transform(result_icp.transformation)
