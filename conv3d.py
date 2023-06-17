@@ -128,10 +128,10 @@ if __name__ == "__main__":
         # stl input
         inmesh = o3d.io.read_triangle_mesh(str(fil1))
         if args.n is None:
-            npoints=10000
+            NPOINTS=10000
         else:
-            npoints = args.n
-        inpcl = surface_to_pcl(inmesh, points=npoints, alg=ALGO)
+            NPOINTS = args.n
+        inpcl = surface_to_pcl(inmesh, points=NPOINTS, alg=ALGO)
     elif fil1.suffix=='.ply':
         # pcl imput
         inpcl = o3d.io.read_point_cloud(str(fil1))

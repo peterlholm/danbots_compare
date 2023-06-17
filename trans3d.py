@@ -1,6 +1,7 @@
 #!/bin/python3
 "Convert a 3d file to pointcloud"
 import sys
+import math
 import copy
 from pathlib import Path
 import argparse
@@ -60,8 +61,9 @@ def trans(in_pcl, translation):
     return opcl
 
 def rotate(in_pcl, rotation_angles):
-    "rotate input pcl to output pcl"
-    r_matrix = o3d.geometry.PointCloud.get_rotation_matrix_from_axis_angle(rotation_angles)
+    "rotate input pcl rotation angles in degree"
+    rotation_radians = [rotation_angles[0] / 180 * math.pi, rotation_angles[1] / 180 * math.pi, rotation_angles[2] /180 * math.pi]
+    r_matrix = o3d.geometry.PointCloud.get_rotation_matrix_from_axis_angle(rotation_radians)
     opcl = in_pcl.rotate(r_matrix, center=(0,0,0))
     return opcl
 
@@ -81,9 +83,9 @@ if __name__ == "__main__":
     parser.add_argument('-tx', required=False, default=0, type=float, help="Transform in x direction", action='store' )
     parser.add_argument('-ty', required=False, default=0, type=float, help="Transform in y direction", action='store' )
     parser.add_argument('-tz', required=False, default=0, type=float, help="Transform in z direction", action='store' )
-    parser.add_argument('-rx', required=False, default=0, type=float, help="Rotate araound x axis", action='store' )
-    parser.add_argument('-ry', required=False, default=0, type=float, help="Rotate araound y axis", action='store' )
-    parser.add_argument('-rz', required=False, default=0, type=float, help="Rotate araound z axis", action='store' )
+    parser.add_argument('-rx', required=False, default=0, type=float, help="Rotate around x axis", action='store' )
+    parser.add_argument('-ry', required=False, default=0, type=float, help="Rotate around y axis", action='store' )
+    parser.add_argument('-rz', required=False, default=0, type=float, help="Rotate around z axis", action='store' )
     parser.add_argument('--scale', required=False, default=0, type=float, help="Scale object", action='store' )
     args = parser.parse_args()
 
@@ -120,19 +122,22 @@ if __name__ == "__main__":
     #     print(f"Transforming ({args.x},{args.y},{args.z}")
 
     if args.tx or args.ty or args.tz:
-        print("performing translation ",(args.tx, args.ty, args.tz))
+        if _VERBOSE:
+            print("performing translation ",(args.tx, args.ty, args.tz))
         outpcl = trans(inpcl, (args.tx, args.ty, args.tz))
     if args.rx or args.ry or args.rz:
-        print("Performing rotation", (args.rx,args.ry,args.rz))
+        if _VERBOSE:
+            print("Performing rotation", (args.rx,args.ry,args.rz))
         outpcl = rotate(inpcl,(args.rx,args.ry,args.rz))
     if args.scale:
-        print("Performing scaling", (args.scale))
+        if _VERBOSE:
+            print("Performing scaling", (args.scale))
         outpcl = scale(inpcl,(args.scale))
-     
+
     o3d.io.write_point_cloud(str(args.out_file), outpcl)
     if args.s:
         objects = [org, outpcl]
         if args.axis:
             axis = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.01, origin=[0,0,0])
             objects.append(axis)
-        o3d.visualization.draw_geometries(objects)
+        o3d.visualization.draw_geometries(objects, width=1000, height=1000)

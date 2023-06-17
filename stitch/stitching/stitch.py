@@ -1,11 +1,12 @@
 "Stitch 2 point clouds"
+import math
 from pathlib import Path
 import open3d as o3d
 from . import registration as reg
 from . import noise_removal as nr
 
 _DEBUG = True
-
+_VERBOSE = False
 
 VOXEL_SIZE = 0.0001
 
@@ -27,6 +28,38 @@ def show_objects(obj, name=""):
                                   #up=[-0.0694, -0.9768, 0.2024])
                                   #up=[-10.0694, 0, 0.0])
 
+
+
+def decode_transformation(tm):
+    "get information from translation matrix"     
+    translation = tm[:3, 3]
+    vx = tm[:3,0]
+    vy = tm[:3,1]
+    vz = tm[:3,2]
+    if _DEBUG:
+        print("Translation", translation)
+        print(f"vx: {vx} vy: {vy} vz: {vz}")
+
+    sx = math.sqrt(vx[0]**2+vx[1]**2+vx[2]**2)
+    sy = math.sqrt(vy[0]**2+vy[1]**2+vy[2]**2)
+    sz = math.sqrt(vz[0]**2+vz[1]**2+vz[2]**2)
+    scale = [sx, sy, sz]
+    if _DEBUG:
+        print("Scale", scale)
+    print(tm[0,0], tm[0][0],tm[0,1], tm[0][1])
+    rot = [[tm[0,0]/sx,tm[0,1]/sy,tm[0,2]/sz,0],
+           [tm[1,0]/sx,tm[1,1]/sy,tm[1,2]/sz,0],
+           [tm[2,0]/sx,tm[2,1]/sy,tm[2,2]/sz,0],
+           [0,0,0,1] ]
+    if _DEBUG:
+        print("rotation matrix", rot)
+    rvx = math.atan2(rot[2][1],rot[2][2])
+    rvy = math.atan2(-rot[2][0],math.sqrt(rot[2][1]**2+rot[2][2]**2))
+    rvz = math.atan2(rot[1][0], rot[0][0])
+    rotations = [rvx*180/math.pi, rvy*180/math.pi, rvz*180/math.pi]
+    if _DEBUG:
+        print ("Rotation angles", rotations)
+    return translation, rotations, scale
 
 def read_pointcloud(file: Path):
     "Read a standard pcl"
@@ -57,20 +90,21 @@ def reg_point_clouds(ref, new):
     test_target, transformation = reg.get_transformations(ref, new, VOXEL_SIZE)
     return test_target, transformation
 
-def rstitch(reference, new):
-    "run the stitching"
+def stitch_trans(reference, new, use_cleaning= False, use_color=False, debug=_DEBUG, verbose=_VERBOSE):
+    "Get the best transformation for new"
     color=True
-    if _DEBUG:
+    if debug:
+        print(f"Registation with color: {use_color}")
         print(f"Reference: {len(reference.points):8} Points, Color: {reference.has_colors()}")
         print(f"Test:      {len(new.points):8} Points, Color: {reference.has_colors()}")
         color = True
     if color:
         reference.paint_uniform_color((0,1,0))
         new.paint_uniform_color((1,0,0))
-    
-    if _DEBUG:
+
+    if debug:
         show_objects([reference, new], name="Original clouds")
-    if False:   # cleaning
+    if use_cleaning:   # cleaning
         print("start cleaning")
         c_org = clean_point_cloud(reference)
         c_test = clean_point_cloud(new, epsilon=1)
@@ -79,12 +113,14 @@ def rstitch(reference, new):
         show_objects(objects)
 
     test_target, transformation = reg_point_clouds(reference, new)
-    if _DEBUG:
+    if debug:
         print("Regisering test_target", test_target)
         print("Regisering transformation:", transformation)
         #print("Registering information matrix", inf_matrix)
-
-    print("Transformation", transformation)
+    #    trans, rot, scale = decode_transformation(transformation)
+    if debug:
+        print("Transformation", transformation)
+    #    print(f"Translation, {trans}, Rotation {rot}, scale {scale}", )
     # objects = [ org, new]
     # show_objects(objects)
     return transformation

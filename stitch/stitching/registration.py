@@ -3,7 +3,7 @@ import copy
 import open3d as o3d
 import numpy as np
 
-_DEBUG = True
+_DEBUG = False
 _SHOW = False
 _TMPFILE = True
 
@@ -25,7 +25,7 @@ def draw_registration_result(reference, test_source, transformation, axis=False,
     if axis:
         axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1, origin=[0, 0, 0])
         pointclouds.append(axis_pcd)
-    o3d.visualization.draw_geometries(pointclouds, window_name=window_name)
+    o3d.visualization.draw_geometries(pointclouds, window_name=window_name, width=1000, height=1000)
 
 def compute_normal(pcd):
     "creates normalts that all point in same (wrong) direction (due to low radius)"
@@ -50,7 +50,8 @@ def preprocess_point_cloud(pcd, voxel_size):
     pcd_fpfh = o3d.pipelines.registration.compute_fpfh_feature(
         pcd_down,
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
-    print(f"pcd_fpfh features dimension: {pcd_fpfh.dimension()} numbers: {pcd_fpfh.num()}")
+    if _DEBUG:
+        print(f"pcd_fpfh features dimension: {pcd_fpfh.dimension()} numbers: {pcd_fpfh.num()}")
     return pcd_down, pcd_fpfh
 
 def execute_global_registration(reference_down, target_down,
@@ -95,11 +96,14 @@ def prepare_dataset(ref, test_target, voxel_size):
 
 def get_transformations(ref, test_target, voxel_size):
     "get transformations from pointclouds"
-    print(voxel_size)
+    if _DEBUG:
+        print("org voxel", voxel_size)
     voxel_size = 0.0005
+    if _DEBUG:
+        print("voxel set to", voxel_size)
     ref_down, test_down, ref_fpfh, test_fpfh = prepare_dataset(ref, test_target, voxel_size)
-    
-    o3d.visualization.draw_geometries([ref_down, test_down], window_name="downsample")
+    if _DEBUG:
+        o3d.visualization.draw_geometries([ref_down, test_down], window_name="downsample", width=1000, height=1000)
     result_ransac = execute_global_registration(
             ref_down, test_down, ref_fpfh, test_fpfh,
             voxel_size)
@@ -117,14 +121,9 @@ def get_transformations(ref, test_target, voxel_size):
     if result_icp.fitness < LOCAL_FITNESS or result_icp.inlier_rmse >LOCAL_RMSE:
         print("BAD LOCAL REGISTRATION", result_icp)
         return None, None
-
-    draw_registration_result(ref, test_target, result_icp.transformation, window_name="Local registration originals")
+    if _DEBUG:
+        draw_registration_result(ref, test_target, result_icp.transformation, window_name="Local registration originals")
 
     transformation = result_icp.transformation
-
-    # test_down.transform(result_icp.transformation)
-    # target += test_down
-    # target = target.voxel_down_sample(voxel_size)
-        # print("information matrix", inf_matrix)
 
     return test_target, transformation #, inf_matrix

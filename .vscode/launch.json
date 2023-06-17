@@ -87,23 +87,33 @@
             "justMyCode": true
         },
         {
-            "name": "trans3d med testobject.stl",
+            "name": "trans3d translate testobject",
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-s", "-a", "-x", "-0.021", "-y", "-0.01", "-z", "0.1", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_tx-0.021y-0.01z0.1.ply"],
+            "args": ["-v", "-s", "-a", "-x", "-0.021", "-y", "-0.1", "-z", "0.1", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_tx-0.021y-0.01z0.1.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "trans3d rotation testobject.stl",
+            "name": "trans3d rotate testobject 30,0,0",
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-a", "-s", "-rx", "0.1", "-ry", "0.2", "-rz", "0.3", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_rxyz-0.1.ply"],
+            "args": ["-v", "-a", "-s", "-rx", "30", "-ry", "0.00", "-rz", "0.00", "testdata/testobject/obj1/test_object_p10K.ply", "testdata/testobject/obj1/trans/rotate_30_0_0.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "trans3d rotate testobject 10,20,30",
+            "type": "python",
+            "request": "launch",
+            "program": "trans3d.py",
+            "args": ["-v", "-a", "-s", "-rx", "10.0", "-ry", "20.0", "-rz", "30.0", "testdata/testobject/obj1/test_object_p10K.ply", "testdata/testobject/obj1/trans/rotate_10_20_30.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
         {
             "name": "trans3d scale wand",
             "type": "python",
@@ -123,11 +133,11 @@
             "justMyCode": true
         },
         {
-            "name": "Stitch test - ens",
+            "name": "Stitch test - ENS",
             "type": "python",
             "request": "launch",
             "program": "stitch/stitch.py",
-            "args": ["-v",
+            "args": ["-v", "-d",
                 "testdata/testobject/obj1/test_object_p1M.ply",
                 "testdata/testobject/obj1/test_object_p10K.ply"
             ],
@@ -164,9 +174,21 @@
             "type": "python",
             "request": "launch",
             "program": "stitch/stitch.py",
-            "args": ["-v", "-d",
+            "args": [ 
                 "testdata/testobject/obj1/test_object_p1M.ply",
-                "testdata/testobject/obj1/distort/rot_trans_dist_0.0001.ply"
+                "testdata/testobject/obj1/trans/rotate_0_0_30.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Stitch rotation",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch/stitch.py",
+            "args": [
+                "testdata/testobject/obj1/test_object_p1M.ply",
+                "testdata/testobject/obj1/trans/rotate_10_20_30.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

@@ -2,11 +2,10 @@
 "Stitch a pointcloud to pointcloud"
 import sys
 from pathlib import Path
-#from random import random
 import argparse
 import open3d as o3d
 #import numpy as np
-from stitching.stitch import rstitch
+from stitching.stitch import stitch_trans, decode_transformation
 
 
 _DEBUG = False
@@ -47,29 +46,25 @@ def mesh_info(mesh):
     print("Oriented Bounding box",mesh.get_oriented_bounding_box())
     print("Vertices", len(mesh.vertices))
 
+# def draw_registration_result(reference, test_source, transformation, axis=False, window_name="registration result", color=False):
+#     "Debug draw registration result"
+#     reference_temp = copy.deepcopy(reference)
+#     test_temp = copy.deepcopy(test_source)
+#     if color:
+#         reference_temp.paint_uniform_color([0, 0.7, 0.1])
+#         test_temp.paint_uniform_color([1, 0.0, 0.1])
+#     test_temp.transform(transformation)
+#     pointclouds =[reference_temp, test_temp]
+#     if axis:
+#         axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1, origin=[0, 0, 0])
+#         pointclouds.append(axis_pcd)
+#     o3d.visualization.draw_geometries(pointclouds, window_name=window_name)
 
-
-def draw_registration_result(reference, test_source, transformation, axis=False, window_name="registration result", color=False):
-    "Debug draw registration result"
-    reference_temp = copy.deepcopy(reference)
-    test_temp = copy.deepcopy(test_source)
-    if color:
-        reference_temp.paint_uniform_color([0, 0.7, 0.1])
-        test_temp.paint_uniform_color([1, 0.0, 0.1])
-    test_temp.transform(transformation)
-    pointclouds =[reference_temp, test_temp]
-    if axis:
-        axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1, origin=[0, 0, 0])
-        pointclouds.append(axis_pcd)
-    o3d.visualization.draw_geometries(pointclouds, window_name=window_name)
-
-
-def trans_file(in_pcl, outfile, transformation):
+def trans_file(pcl, outfile, transformation):
     "transform and write file with transformation"
     #in_pcl = o3d.io.read_point_cloud(str(infile))
-    in_pcl.transform(transformation)
-    o3d.io.write_point_cloud(str(outfile), in_pcl)
-
+    pcl.transform(transformation)
+    o3d.io.write_point_cloud(str(outfile), pcl)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='stitch3d', description='Stitch two 3d files and calculate error figures')
@@ -77,6 +72,7 @@ if __name__ == "__main__":
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('org_file', type=Path, help="The original stl or pointcloud")
     parser.add_argument('test_file', type=Path, help="The pointcloud to be measured")
+    parser.add_argument('-o', required=False, help="Make an output file", action='store_true' )
     args = parser.parse_args()
 
     _DEBUG = args.d
@@ -94,12 +90,7 @@ if __name__ == "__main__":
         obj_size = mesh_size(inmesh)
         if _VERBOSE:
             print(f"Input object size {obj_size:.2f}")
-        #print(mesh_info(mesh))
-        #mesh = error = cmp_pcl(fil1, fil2)
         in_pcl = surface_to_pcl(inmesh)
-        #in2_pcl = surface_to_pcl(inmesh, point_factor=1, number=10000)
-        #o3d.io.write_point_cloud('pcloud.ply', in_pcl)
-        #o3d.io.write_point_cloud('pcloud2.ply', in2_pcl)
     elif args.org_file.suffix=='.ply':
         in_pcl = o3d.io.read_point_cloud(str(args.org_file))
     else:
@@ -108,10 +99,17 @@ if __name__ == "__main__":
 
     if args.test_file.suffix=='.ply':
         t_pcl = o3d.io.read_point_cloud(str(args.test_file))
+    else:
+        print("Input file2 type error")
+        sys.exit(1)
 
-    transform = rstitch(in_pcl, t_pcl)
-    print("Transformation:", transform)
+    transform = stitch_trans(in_pcl, t_pcl, debug=args.d, verbose=args.v)
+    print("Resulting Transformation:", transform)
+    trans, rot, scale = decode_transformation(transform)
+    print(f"Translation, {trans}, Rotation {rot}, scale {scale}", )
+ 
     if transform is None:
         print("No transformation can be found")
         sys.exit(2)
-    trans_file(t_pcl, "out.ply", transform)
+    if args.o:
+        trans_file(t_pcl, "out.ply", transform)
