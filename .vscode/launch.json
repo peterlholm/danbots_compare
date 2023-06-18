@@ -186,7 +186,7 @@
             "type": "python",
             "request": "launch",
             "program": "stitch/stitch.py",
-            "args": ["-o", 
+            "args": ["-o", "out.ply", "-v", "-s",
                 "testdata/testobject/obj1/test_object_p1M.ply",
                 "testdata/testobject/obj1/trans/rotate_10_20_30.ply"
             ],

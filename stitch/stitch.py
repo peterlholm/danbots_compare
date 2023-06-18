@@ -1,17 +1,16 @@
 #!/bin/python3
 "Stitch a pointcloud to pointcloud"
 import sys
+import copy
 from pathlib import Path
 import argparse
 import open3d as o3d
-#import numpy as np
 from stitching.stitch import stitch_trans, decode_transformation
-
+from stitching.registration import draw_registration_result
 
 _DEBUG = False
 _SHOW = True
 _VERBOSE = False
-
 
 def surface_to_pcl(mesh, alg="poisson", number_of_points=100000, init_factor=10):
     "convert mesh surfaces to pointcloud, point_factor vertices/points"
@@ -46,23 +45,8 @@ def mesh_info(mesh):
     print("Oriented Bounding box",mesh.get_oriented_bounding_box())
     print("Vertices", len(mesh.vertices))
 
-# def draw_registration_result(reference, test_source, transformation, axis=False, window_name="registration result", color=False):
-#     "Debug draw registration result"
-#     reference_temp = copy.deepcopy(reference)
-#     test_temp = copy.deepcopy(test_source)
-#     if color:
-#         reference_temp.paint_uniform_color([0, 0.7, 0.1])
-#         test_temp.paint_uniform_color([1, 0.0, 0.1])
-#     test_temp.transform(transformation)
-#     pointclouds =[reference_temp, test_temp]
-#     if axis:
-#         axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1, origin=[0, 0, 0])
-#         pointclouds.append(axis_pcd)
-#     o3d.visualization.draw_geometries(pointclouds, window_name=window_name)
-
 def trans_file(pcl, outfile, transformation):
     "transform and write file with transformation"
-    #in_pcl = o3d.io.read_point_cloud(str(infile))
     pcl.transform(transformation)
     o3d.io.write_point_cloud(str(outfile), pcl)
 
@@ -70,9 +54,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='stitch3d', description='Stitch two 3d files and calculate error figures')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
+    parser.add_argument('-s', '--show', required=False, help="Show the stitch result", action='store_true' )
     parser.add_argument('org_file', type=Path, help="The original stl or pointcloud")
     parser.add_argument('test_file', type=Path, help="The pointcloud to be measured")
-    parser.add_argument('-o', required=False, help="Make an output file", action='store_true' )
+    parser.add_argument('-o', '--outfile', required=False, nargs=1, help="Make an output file", action='store' )
     args = parser.parse_args()
 
     _DEBUG = args.d
@@ -84,7 +69,6 @@ if __name__ == "__main__":
         print("input file(s) does not exist")
         sys.exit(1)
     # check file types
-
     if args.org_file.suffix=='.stl':
         inmesh = o3d.io.read_triangle_mesh(str(args.org_file))
         obj_size = mesh_size(inmesh)
@@ -102,13 +86,16 @@ if __name__ == "__main__":
     else:
         print("Input file2 type error")
         sys.exit(1)
-
-    transform = stitch_trans(in_pcl, t_pcl, debug=args.d, verbose=args.v)
+    ot_pcl = copy.deepcopy(t_pcl)
+    transform = stitch_trans(in_pcl, t_pcl, debug=args.d)
     print("Resulting Transformation:\n", transform)
     trans, rot, scale = decode_transformation(transform)
-    print(f"Translation: {trans}\nRotation: {rot}\n:Scale {scale}" )
+    print(f"Translation: {trans}\nRotation: {rot}\nScale {scale}" )
     if transform is None:
         print("No transformation can be found")
         sys.exit(2)
-    if args.o:
-        trans_file(t_pcl, "out.ply", transform)
+    if args.outfile:
+        print("Saving result to:", args.outfile[0])
+        trans_file(t_pcl, args.outfile[0], transform)
+    if args.show:
+        draw_registration_result(in_pcl, ot_pcl, transform, window_name="Stitch result", color=True)
