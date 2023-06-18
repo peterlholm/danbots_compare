@@ -16,4 +16,6 @@ install:
 	chmod a+x /usr/local/bin/show3d
 	cp trans3d.py /usr/local/bin/trans3d
 	chmod a+x /usr/local/bin/trans3d
+	cp stitch3d.py /usr/local/bin/stitch3d
+	chmod a+x /usr/local/bin/stitch3d
 	
