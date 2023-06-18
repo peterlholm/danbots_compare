@@ -104,10 +104,9 @@ if __name__ == "__main__":
         sys.exit(1)
 
     transform = stitch_trans(in_pcl, t_pcl, debug=args.d, verbose=args.v)
-    print("Resulting Transformation:", transform)
+    print("Resulting Transformation:\n", transform)
     trans, rot, scale = decode_transformation(transform)
-    print(f"Translation, {trans}, Rotation {rot}, scale {scale}", )
- 
+    print(f"Translation: {trans}\nRotation: {rot}\n:Scale {scale}" )
     if transform is None:
         print("No transformation can be found")
         sys.exit(2)

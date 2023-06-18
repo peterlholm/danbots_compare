@@ -24,4 +24,7 @@ generated-members = o3d.*
 good-names=i,
            j,
            s,
-           p
+           p,
+           sx,sy,sz,
+           vx,vy,vz,
+           tm

@@ -5,7 +5,7 @@ import open3d as o3d
 from . import registration as reg
 from . import noise_removal as nr
 
-_DEBUG = True
+_DEBUG = False
 _VERBOSE = False
 
 VOXEL_SIZE = 0.0001
@@ -46,7 +46,6 @@ def decode_transformation(tm):
     scale = [sx, sy, sz]
     if _DEBUG:
         print("Scale", scale)
-    print(tm[0,0], tm[0][0],tm[0,1], tm[0][1])
     rot = [[tm[0,0]/sx,tm[0,1]/sy,tm[0,2]/sz,0],
            [tm[1,0]/sx,tm[1,1]/sy,tm[1,2]/sz,0],
            [tm[2,0]/sx,tm[2,1]/sy,tm[2,2]/sz,0],
@@ -90,7 +89,7 @@ def reg_point_clouds(ref, new):
     test_target, transformation = reg.get_transformations(ref, new, VOXEL_SIZE)
     return test_target, transformation
 
-def stitch_trans(reference, new, use_cleaning= False, use_color=False, debug=_DEBUG, verbose=_VERBOSE):
+def stitch_trans(reference, new, use_cleaning= False, use_color=False, debug=_DEBUG):
     "Get the best transformation for new"
     color=True
     if debug:
