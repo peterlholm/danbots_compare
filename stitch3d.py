@@ -363,8 +363,8 @@ if __name__ == "__main__":
     ot_pcl = copy.deepcopy(t_pcl)
     transform = stitch_trans(in_pcl, t_pcl, debug=args.d)
     print("Resulting Transformation:\n", transform)
-    trans, rot, scale = decode_transformation(transform)
-    print(f"Translation: {trans}\nRotation: {rot}\nScale {scale}" )
+    trans, t_rot, t_scale = decode_transformation(transform)
+    print(f"Translation: {trans}\nRotation: {t_rot}\nScale {t_scale}" )
     if transform is None:
         print("No transformation can be found")
         sys.exit(2)
