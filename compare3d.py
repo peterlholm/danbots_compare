@@ -45,7 +45,7 @@ def show_pcls(pcl1, pcl2, axis=False):
     if axis:
         axi = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.01, origin=(0,0,0))
         objects.append(axi)
-    o3d.visualization.draw_geometries(objects)
+    o3d.visualization.draw_geometries(objects, width=1000, height=1000)
 
 def cmp2pcl(org_pcl, test_pcl):
     "compare 2 pcl a pointcloud and return a value for the error"
@@ -71,6 +71,7 @@ if __name__ == "__main__":
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', required=False, help="Show output", action='store_true' )
     parser.add_argument('-a', required=False, help="Show axis", action='store_true' )
+    parser.add_argument('--script', required=False, help="Scripting output", action='store_true' )
     parser.add_argument('org_file', help="The reference stl or pointcloud")
     parser.add_argument('test_file', help="The test pointcloud to be measured")
     args = parser.parse_args()
@@ -84,7 +85,7 @@ if __name__ == "__main__":
         print(f"Comparing {fil1} and {fil2}")
     # check files exists
     if not fil1.exists() or not fil2.exists():
-        print("input file(s) does not exist")
+        print("input file(s) does not exist", file=sys.stderr)
         sys.exit(1)
     if fil1.suffix=='.stl':
         inmesh = o3d.io.read_triangle_mesh(str(fil1))
@@ -92,11 +93,17 @@ if __name__ == "__main__":
     elif fil1.suffix=='.ply':
         in_pcl = o3d.io.read_point_cloud(str(fil1))
     else:
-        print("Input file type error")
+        print("Input file type error", file=sys.stderr)
         sys.exit(1)
 
     if fil2.suffix=='.ply':
         t_pcl = o3d.io.read_point_cloud(str(fil2))
+    elif fil1.suffix=='.stl':
+        testmesh = o3d.io.read_triangle_mesh(str(fil2))
+        t_pcl = surface_to_pcl(testmesh)
+    else:
+        print("Input file type error", file=sys.stderr)
+        sys.exit(1)
 
     obj_size = mesh_size(in_pcl)
 
@@ -107,10 +114,14 @@ if __name__ == "__main__":
         print("Points in testfile", len(t_pcl.points))
 
     rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
-    print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
-    if _DEBUG:
-        print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")
-    print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
+    if not args.script:
+        print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
+        if _DEBUG:
+            print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")
+        print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
+    else:
+        print(f"{rms:.6f}  {vmin:.6f}  {vmax:.6f}  {mean:.6f} ")
+        print(f"{rms/obj_size:.3f} {vmin/obj_size:.3f} {vmax/obj_size:.3f} {mean/obj_size:.3f}")
 
     if _SHOW:
         show_pcls(in_pcl, t_pcl, axis=args.a)

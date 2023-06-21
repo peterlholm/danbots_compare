@@ -17,7 +17,7 @@
             "type": "python",
             "request": "launch",
             "program": "compare3d.py",
-            "args": ["-v", "-s", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/test_object_p10000.ply"],
+            "args": [ "-v", "-s", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/test_object_p10K.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
