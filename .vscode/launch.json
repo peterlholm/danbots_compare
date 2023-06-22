@@ -145,13 +145,13 @@
             "justMyCode": true
         },
         {
-            "name": "Stitch ERROR",
+            "name": "Stitch 2 forskellige",
             "type": "python",
             "request": "launch",
-            "program": "compare3d.py",
-            "args": ["-v",
+            "program": "stitch3d.py",
+            "args": ["-v", "-d",
                 "testdata/testobject/obj1/test_object_p1M.ply",
-                "out.ply"
+                "testdata/pcl/tooth/Tand/tand.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -161,10 +161,10 @@
             "name": "Stitch test - 0.001",
             "type": "python",
             "request": "launch",
-            "program": "stitch/stitch.py",
-            "args": ["-v",
+            "program": "stitch3d.py",
+            "args": ["-v", 
                 "testdata/testobject/obj1/test_object_p1M.ply",
-                "testdata/testobject/obj1/trans/test_object_p10000_rxyz-0.1.ply"
+                "testdata/testobject/obj1/trans/trans_0.0004.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -173,8 +173,8 @@
             "name": "Stitch rot trans",
             "type": "python",
             "request": "launch",
-            "program": "stitch/stitch.py",
-            "args": [ 
+            "program": "stitch3d.py",
+            "args": [ "-v",
                 "testdata/testobject/obj1/test_object_p1M.ply",
                 "testdata/testobject/obj1/trans/rotate_0_0_30.ply"
             ],
