@@ -18,4 +18,6 @@ install:
 	chmod a+x /usr/local/bin/trans3d
 	cp stitch3d.py /usr/local/bin/stitch3d
 	chmod a+x /usr/local/bin/stitch3d
+	cp crop3d.py /usr/local/bin/crop3d
+	chmod a+x /usr/local/bin/crop3d
 	

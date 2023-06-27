@@ -30,6 +30,15 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Show3d med tand2",
+            "type": "python",
+            "request": "launch",
+            "program": "show3d.py",
+            "args": ["-v", "-a", "-r", "-d", "testdata/testobject/tand2/tand-nr2.stl"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
 
         {
             "name": "Show3d med wand testfil and org",
@@ -40,16 +49,7 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
-        {
-            "name": "Show3d med testobject.stl",
-            "type": "python",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "-r", "testdata/testobject/obj1/test_object.stl"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-         {
+          {
             "name": "Verbose Compare3d med dist testfiler",
             "type": "python",
             "request": "launch",
@@ -59,25 +59,15 @@
             "justMyCode": true
         },
         {
-            "name": "conv3d med testobject.stl",
+            "name": "Convert tand2",
             "type": "python",
             "request": "launch",
             "program": "conv3d.py",
-            "args": ["-v", "-d", "-n", "1000000", "-u", "testdata/testobject/obj1/test_object.stl", "testdata/testobject/obj1/test_object_1M.ply"],
+            "args": ["-v", "-d", "-n", "1000000", "-u", "testdata/testobject/tand2/tand-nr2.stl", "testdata/testobject/tand2/test_object_1M.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
-
         {
-            "name": "Show3d med dist  testfiler",
-            "type": "python",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-v", "-a", "testdata/testobject/render8/point_cloud2.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-         {
             "name": "Mirror PointCloud",
             "type": "python",
             "request": "launch",
@@ -115,20 +105,11 @@
         },
 
         {
-            "name": "trans3d scale wand",
+            "name": "trans3d scale tand object",
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-a", "--scale", "0.01", "testdata/testobject/wand/render6/point_mirror.ply", "testdata/testobject/obj1/trans/wand.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Stitch",
-            "type": "python",
-            "request": "launch",
-            "program": "stitch/stitch.py",
-            "args": ["-v", "-d", "testdata/testobject/obj1/wand/render6/point_mirror.ply", "testdata/testobject/obj1/trans/wand.ply"],
+            "args": ["-v", "-a", "--scale", "0.001", "testdata/testobject/tand2/test_object_1M.ply", "testdata/testobject/tand2/test_object_1M_001.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -170,13 +151,13 @@
             "justMyCode": true
         },
        {
-            "name": "Stitch rot trans",
+            "name": "Stitch Tand",
             "type": "python",
             "request": "launch",
             "program": "stitch3d.py",
-            "args": [ "-v",
-                "testdata/testobject/obj1/test_object_p1M.ply",
-                "testdata/testobject/obj1/trans/rotate_0_0_30.ply"
+            "args": [ "-v", "-s", "-d",
+                "testdata/testobject/tand2/test_object_p1M_90A.ply",
+                "testdata/testobject/tand2/wand/pointcloud_c.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -185,10 +166,21 @@
             "name": "Stitch rotation",
             "type": "python",
             "request": "launch",
-            "program": "stitch/stitch.py",
+            "program": "stitch3d.py",
             "args": ["-o", "out.ply", "-v", "-s",
                 "testdata/testobject/obj1/test_object_p1M.ply",
                 "testdata/testobject/obj1/trans/rotate_10_20_30.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Crop",
+            "type": "python",
+            "request": "launch",
+            "program": "crop3d.py",
+            "args": ["-c", "-s", "-xl", "1.381","-yl", "0.11", "-yh", "200",
+                "testdata/testobject/tand2/test_object_1M_001.ply", 
             ],
             "console": "integratedTerminal",
             "justMyCode": true

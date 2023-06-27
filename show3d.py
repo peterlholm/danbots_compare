@@ -58,7 +58,7 @@ def pcl2pic(objects, name="", outfile=None):
     obj_center = objects[0].get_center()
     ob_size = obj_size(objects[0])
     vis = o3d.visualization.Visualizer()
-    res = vis.create_window(visible = _DEBUG, window_name=name, width=1000, height=1000)
+    res = vis.create_window(visible = True, window_name=name, width=1000, height=1000)
     if not res:
         print("create window result", res)
     for obj in objects:
@@ -127,8 +127,8 @@ if __name__ == "__main__":
         if not mymesh.has_triangle_normals():
             mymesh.compute_triangle_normals()
         size = obj_size(mymesh)
-        mypcl = surface_to_pcl(mymesh)
-        vobjects.append(mypcl)
+        #mypcl = surface_to_pcl(mymesh)
+        vobjects.append(mymesh)
         #in_pcl = stl2pcl(mesh)
     elif fil1.suffix=='.ply':
         mypcl = o3d.io.read_point_cloud(str(fil1))
@@ -183,13 +183,13 @@ if __name__ == "__main__":
             ASIZE = 1
         else:
             ASIZE = 0.01
-        print(ASIZE)
+        print("Asize", ASIZE)
         coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=ASIZE,origin=(0,0,0))
         vobjects.append(coord)
     if _DEBUG:
         print("Number of objects:", len(vobjects))
         print(vobjects)
     if args.r:
-        show_objects(vobjects)
+        show_objects(vobjects, name=window_name)
     else:
         pcl2pic(vobjects, name=window_name, outfile=args.write)

@@ -108,9 +108,9 @@ VOXEL_SIZE = 0.0005
 
 GLOBAL_FITNESS = 0.5
 GLOBAL_RMSE = 0.001
-GLOBAL_FITNESS = 0.6
+GLOBAL_FITNESS = 0.2
 GLOBAL_RMSE = 0.001
-LOCAL_FITNESS = 0.3
+LOCAL_FITNESS = 0.2
 LOCAL_RMSE = 0.001
 
 
@@ -333,6 +333,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', '--show', required=False, help="Show the stitch result", action='store_true' )
+    parser.add_argument('-c', '--clean', required=False, help="Clean the point clounds", action='store_true' )
     parser.add_argument('org_file', type=Path, help="The original stl or pointcloud")
     parser.add_argument('test_file', type=Path, help="The pointcloud to be measured")
     parser.add_argument('-o', '--outfile', required=False, nargs=1, help="Make an output file", action='store' )
@@ -366,7 +367,7 @@ if __name__ == "__main__":
         sys.exit(8)
     #
     ot_pcl = copy.deepcopy(t_pcl)
-    transform = stitch_trans(in_pcl, t_pcl, debug=args.d)
+    transform = stitch_trans(in_pcl, t_pcl, debug=args.d, use_cleaning=args.clean)
     if transform is None:
         print("No transformation found")
         sys.exit(1)
