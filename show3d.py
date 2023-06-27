@@ -145,9 +145,9 @@ if __name__ == "__main__":
             if _VERBOSE:
                 print("adding triangle normals to file1")
         size = obj_size(mymesh)
-        vobjects.append(mymesh)
         #mypcl = surface_to_pcl(mymesh)
-        #objects.append(mypcl)
+        vobjects.append(mymesh)
+        #in_pcl = stl2pcl(mesh)
     elif fil1.suffix=='.ply':
         mypcl = o3d.io.read_point_cloud(str(fil1))
         if args.color:
@@ -190,6 +190,7 @@ if __name__ == "__main__":
             ASIZE = 0.01
         if _DEBUG:
             print("Axis size", ASIZE)
+        print("Asize", ASIZE)
         coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=ASIZE,origin=(0,0,0))
         vobjects.append(coord)
     if _DEBUG:

@@ -99,13 +99,18 @@ def get_cluster_indicies(clusters, cluster):
     #print("get_cluster_indices")
     return [i for i, x in enumerate(clusters) if x == cluster]
 
+# downsample
 
+#VOXEL_SIZE = 0.0001
+VOXEL_SIZE = 0.0005
 
 # registration
 
 GLOBAL_FITNESS = 0.5
 GLOBAL_RMSE = 0.001
-LOCAL_FITNESS = 0.5
+GLOBAL_FITNESS = 0.2
+GLOBAL_RMSE = 0.001
+LOCAL_FITNESS = 0.2
 LOCAL_RMSE = 0.001
 
 
@@ -187,43 +192,40 @@ def prepare_dataset(ref, test_target, voxel_size):
 
 def get_transformations(ref, test_target, voxel_size):
     "get transformations from pointclouds"
-    if _DEBUG:
-        print("org voxel", voxel_size)
-    voxel_size = 0.0005
-    if _DEBUG:
-        print("voxel set to", voxel_size)
     ref_down, test_down, ref_fpfh, test_fpfh = prepare_dataset(ref, test_target, voxel_size)
     if _DEBUG:
         o3d.visualization.draw_geometries([ref_down, test_down], window_name="downsample", width=1000, height=1000)
     result_ransac = execute_global_registration(
             ref_down, test_down, ref_fpfh, test_fpfh,
             voxel_size)
+    if _VERBOSE:
+        print(f"Global registration result: Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")
     if _DEBUG:
         print("global transformation matrix", result_ransac, np.around(result_ransac.transformation,3))
         draw_registration_result(ref_down, test_down, result_ransac.transformation, window_name="Global registration")
     if result_ransac.fitness < GLOBAL_FITNESS or result_ransac.inlier_rmse > GLOBAL_RMSE:
-        print("BAD GLOBAL REGISTRATION", result_ransac)
+        print(f"BAD GLOBAL REGISTRATION Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")
+        return False, None
+
     result_icp = execute_local_registration(
             test_down, ref_down,
             voxel_size, result_ransac.transformation)
+    if _VERBOSE:
+        print(f"Local registration result: Fitness: {result_icp.fitness:.2f} RMSE: {result_icp.inlier_rmse:.6f}")
     if _DEBUG:
         print("Local transformation matrix", result_icp, np.around(result_icp.transformation,3))
         draw_registration_result(ref_down, test_down, result_icp.transformation, window_name="Local registration downsample")
     if result_icp.fitness < LOCAL_FITNESS or result_icp.inlier_rmse >LOCAL_RMSE:
-        print("BAD LOCAL REGISTRATION", result_icp)
+        print(f"BAD LOCAL REGISTRATION Fitness: {result_icp.fitness:.2f} RMSE: {result_icp.inlier_rmse:.6f}")
         return None, None
     if _DEBUG:
         draw_registration_result(ref, test_target, result_icp.transformation, window_name="Local registration originals")
 
     transformation = result_icp.transformation
-
     return test_target, transformation #, inf_matrix
 
 
 # stitching
-
-VOXEL_SIZE = 0.0001
-
 def color_obj(obj, color=(0,0,0)):
     "add color to object"
     obj.paint_uniform_color(color)
@@ -312,6 +314,8 @@ def stitch_trans(reference, new, use_cleaning= False, use_color=False, debug=_DE
         show_objects(objects)
 
     test_target, transformation = reg_point_clouds(ref_pcl, new_pcl)
+    if test_target == False:
+        return None
     if debug:
         print("Regisering test_target", test_target)
         print("Regisering transformation:", transformation)
@@ -325,10 +329,11 @@ def trans_file(pcl, outfile, transformation):
     o3d.io.write_point_cloud(str(outfile), pcl)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog='stitch3d', description='Stitch two 3d files and calculate error figures')
+    parser = argparse.ArgumentParser(prog='stitch3d', description='Stitch two 3d files and calculate error figures. Return 1 if registration fails')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', '--show', required=False, help="Show the stitch result", action='store_true' )
+    parser.add_argument('-c', '--clean', required=False, help="Clean the point clounds", action='store_true' )
     parser.add_argument('org_file', type=Path, help="The original stl or pointcloud")
     parser.add_argument('test_file', type=Path, help="The pointcloud to be measured")
     parser.add_argument('-o', '--outfile', required=False, nargs=1, help="Make an output file", action='store' )
@@ -341,7 +346,7 @@ if __name__ == "__main__":
     # check files exists
     if not args.org_file.exists() or not args.test_file.exists():
         print("input file(s) does not exist")
-        sys.exit(1)
+        sys.exit(9)
     # check file types
     if args.org_file.suffix=='.stl':
         inmesh = o3d.io.read_triangle_mesh(str(args.org_file))
@@ -353,21 +358,26 @@ if __name__ == "__main__":
         in_pcl = o3d.io.read_point_cloud(str(args.org_file))
     else:
         print("Input file type error")
-        sys.exit(1)
+        sys.exit(8)
 
     if args.test_file.suffix=='.ply':
         t_pcl = o3d.io.read_point_cloud(str(args.test_file))
     else:
         print("Input file2 type error")
-        sys.exit(1)
+        sys.exit(8)
+    #
     ot_pcl = copy.deepcopy(t_pcl)
-    transform = stitch_trans(in_pcl, t_pcl, debug=args.d)
+    transform = stitch_trans(in_pcl, t_pcl, debug=args.d, use_cleaning=args.clean)
+    if transform is None:
+        print("No transformation found")
+        sys.exit(1)
     print("Resulting Transformation:\n", transform)
+    #
     trans, t_rot, t_scale = decode_transformation(transform)
     print(f"Translation: {trans}\nRotation: {t_rot}\nScale {t_scale}" )
     if transform is None:
         print("No transformation can be found")
-        sys.exit(2)
+        sys.exit(1)
     if args.outfile:
         print("Saving result to:", args.outfile[0])
         trans_file(t_pcl, args.outfile[0], transform)
