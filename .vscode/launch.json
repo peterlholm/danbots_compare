@@ -13,6 +13,27 @@
             "justMyCode": true
         },
         {
+            "name": "Show3d med testobject.stl",
+            "type": "python",
+            "request": "launch",
+            "program": "show3d.py",
+            "args": ["-v", "-a", "-r",
+                "testdata/testobject/obj1/test_object.stl"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
+            "name": "Show3d med wand testfil and org",
+            "type": "python",
+            "request": "launch",
+            "program": "show3d.py",
+            "args": ["-v", "-a", "-d", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/trans/wand.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
             "name": "Compare3d ORG med downsamplet org",
             "type": "python",
             "request": "launch",
@@ -31,25 +52,7 @@
             "justMyCode": true
         },
 
-        {
-            "name": "Show3d med wand testfil and org",
-            "type": "python",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/trans/wand.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Show3d med testobject.stl",
-            "type": "python",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "-r", "testdata/testobject/obj1/test_object.stl"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-         {
+          {
             "name": "Verbose Compare3d med dist testfiler",
             "type": "python",
             "request": "launch",

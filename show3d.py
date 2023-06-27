@@ -46,7 +46,7 @@ def obj_size(obj : o3d.geometry.TriangleMesh):
 
 def show_objects(objlist, name=""):
     "Show the object list"
-    o3d.visualization.draw_geometries(objlist, window_name=name, width=1000, height=1000)
+    o3d.visualization.draw_geometries(objlist, window_name=name, width=1000, height=1000, point_show_normal=False, mesh_show_wireframe=False)
 
 def show_objects_test(obj, name=""):
     "Show the object list"
@@ -58,7 +58,7 @@ def pcl2pic(objects, name="", outfile=None):
     obj_center = objects[0].get_center()
     ob_size = obj_size(objects[0])
     vis = o3d.visualization.Visualizer()
-    res = vis.create_window(visible = _DEBUG, window_name=name, width=1000, height=1000)
+    res = vis.create_window(visible = True, window_name=name, width=1000, height=1000)
     if not res:
         print("create window result", res)
     for obj in objects:
@@ -85,17 +85,30 @@ def pcl2pic(objects, name="", outfile=None):
             print(f"Witing to outfile {outfile}")
         vis.capture_screen_image("ud.png", do_render=True)
 
+def add_tecture(mesh):
+    mesh_center = mesh.get_axis_aligned_bounding_box().get_center()
+    mesh.material.set_default_properties()
+    mesh.material.material_name = 'defaultLit'
+    mesh.material.scalar_properties['metallic'] = 1.0
+    mesh.material.texture_maps['albedo'] = o3d.t.io.read_image(dataset.path_map['albedo'])
+    mesh.material.texture_maps['roughness'] = o3d.t.io.read_image(dataset.path_map['roughness'])
+    mesh.material.texture_maps['metallic'] = o3d.t.io.read_image(dataset.path_map['metallic'])
+
+    mi_mesh = mesh.to_mitsuba('monkey')
+    #img = render_mesh(mi_mesh, mesh_center.numpy())
+    #mi.Bitmap(img).write('test.exr')
+
 if __name__ == "__main__":
     #PICFOLDER = Path(__file__).parent / 'testdata'
-    parser = argparse.ArgumentParser(prog='show3d', description='Show one/two 3d files')
+    parser = argparse.ArgumentParser(description='Show one ore more 3d files', epilog="Only stl and ply files are accepted")
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-a', '--axis', required=False, help="Show coord system", action='store_true')
-    parser.add_argument('-c', '--color', required=False, help="Add Collor to object", action="store_true")
+    parser.add_argument('-c', '--color', required=False, help="Add Collors to object", action="store_true")
     parser.add_argument('-nc', '--no_color', required=False, help="Add black color to obj", action="store_true")
     parser.add_argument('-w', "--write", action="store", type=str, required=False, help="Save image to file", metavar="imagefilename")
     parser.add_argument('-r', action="store_true",required=False, help="Show with auto camera")
-    parser.add_argument('file1', help="The first stl or pointcloud")
+    parser.add_argument('file1', type=Path, help="The first 3d file")
     parser.add_argument('file2', nargs="?", help="The second stl or pointcloud")
     #parser.add_argument('file3', nargs="*", help="More stl or pointcloud")
     args = parser.parse_args()
@@ -105,13 +118,14 @@ if __name__ == "__main__":
     if _DEBUG:
         print(args)
 
-    fil1 = Path(args.file1)
+    fil1 = args.file1
     if _VERBOSE:
         print(f"Showing: {fil1}")
     # check files exists
     if not fil1.exists():
-        print(f"input file {fil1} does not exist")
+        print(f"input file {fil1} does not exist", file=sys.stderr)
         sys.exit(1)
+
     # check file types
 
     vobjects = []
@@ -119,17 +133,21 @@ if __name__ == "__main__":
     if fil1.suffix=='.stl':
         mymesh = o3d.io.read_triangle_mesh(str(fil1))
         # if not mesh.has_triangle_colors():
+        add_tecture(mymesh)
         if args.color:
             mymesh.paint_uniform_color((0,1,0))
         if not mymesh.has_vertex_normals():
-            print("add normals")
+            if _VERBOSE:
+                print("adding vertex normals to file1")
             mymesh.compute_vertex_normals()
         if not mymesh.has_triangle_normals():
             mymesh.compute_triangle_normals()
+            if _VERBOSE:
+                print("adding triangle normals to file1")
         size = obj_size(mymesh)
-        mypcl = surface_to_pcl(mymesh)
-        vobjects.append(mypcl)
-        #in_pcl = stl2pcl(mesh)
+        vobjects.append(mymesh)
+        #mypcl = surface_to_pcl(mymesh)
+        #objects.append(mypcl)
     elif fil1.suffix=='.ply':
         mypcl = o3d.io.read_point_cloud(str(fil1))
         if args.color:
@@ -143,6 +161,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     window_name = fil1.name
+
     if args.file2:
         fil2 = Path(args.file2)
         if fil2.suffix=='.ply':
@@ -164,32 +183,20 @@ if __name__ == "__main__":
         print("Object center", vobjects[0].get_center())
         print(f"Object size: {size} m")
 
-    # for file in args.file3:
-    #     fil = Path(file)
-    #     print(fil.name)
-    #     if fil.suffix=='.ply':
-    #         pcl_n = o3d.io.read_point_cloud(str(fil))
-    #         vobjects.append(pcl_n)
-    #     elif fil.suffix=='.stl':
-    #         mesh_n = o3d.io.read_triangle_mesh(str(fil))
-    #         vobjects.append(mesh2)
-    #     else:
-    #         print("Illegal file2 type")
-    #         sys.exit(1)
-    #     window_name += " - " + fil.name
-
     if args.axis:
         if size > 1:
             ASIZE = 1
         else:
             ASIZE = 0.01
-        print(ASIZE)
+        if _DEBUG:
+            print("Axis size", ASIZE)
         coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=ASIZE,origin=(0,0,0))
         vobjects.append(coord)
     if _DEBUG:
         print("Number of objects:", len(vobjects))
         print(vobjects)
     if args.r:
-        show_objects(vobjects)
+        show_objects(vobjects, name=window_name)
+        #show_objects_test(vobjects, name=window_name)
     else:
         pcl2pic(vobjects, name=window_name, outfile=args.write)
