@@ -73,7 +73,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     obj_size = obj_size(inobj)
-    print(f"Input object size {obj_size:.2f}")
+    print(f"Input object size {obj_size:.3f}")
 
     obj_info(inobj)
     
