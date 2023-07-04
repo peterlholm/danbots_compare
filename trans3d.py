@@ -80,6 +80,7 @@ if __name__ == "__main__":
     parser.add_argument('-a', "--axis", required=False, help="Show axis", action='store_true' )
     parser.add_argument('org_file', type=Path, help="The original pointcloud")
     parser.add_argument('out_file', type=Path, help="The resulting pointcloud")
+    parser.add_argument('-c', "--center", required=False, help="Center the object", action='store_true' )
     parser.add_argument('-tx', required=False, default=0, type=float, help="Transform in x direction", action='store' )
     parser.add_argument('-ty', required=False, default=0, type=float, help="Transform in y direction", action='store' )
     parser.add_argument('-tz', required=False, default=0, type=float, help="Transform in z direction", action='store' )
@@ -120,6 +121,16 @@ if __name__ == "__main__":
 
     # if _VERBOSE:
     #     print(f"Transforming ({args.x},{args.y},{args.z}")
+    if args.center:
+        center = inpcl.get_center()
+        if _DEBUG:
+            print(f"Center: {center}")
+        outpcl = inpcl.translate(-center)
+
+    if args.scale:
+        if _VERBOSE:
+            print("Performing scaling", (args.scale))
+        outpcl = scale(inpcl,(args.scale))
 
     if args.tx or args.ty or args.tz:
         if _VERBOSE:
@@ -129,11 +140,7 @@ if __name__ == "__main__":
         if _VERBOSE:
             print("Performing rotation", (args.rx,args.ry,args.rz))
         outpcl = rotate(inpcl,(args.rx,args.ry,args.rz))
-    if args.scale:
-        if _VERBOSE:
-            print("Performing scaling", (args.scale))
-        outpcl = scale(inpcl,(args.scale))
-
+ 
     o3d.io.write_point_cloud(str(args.out_file), outpcl)
     if args.s:
         objects = [org, outpcl]

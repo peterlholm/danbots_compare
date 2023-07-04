@@ -1,0 +1,18 @@
+#!/bin/sh
+
+NO=100000
+NAME=100K
+
+conv3d -n $NO $1.stl $1_${NAME}.ply
+#info3d  $1_10K.ply
+
+
+
+trans3d  -c --scale 0.001  $1_$NAME.ply $1_${NAME}_c.ply
+trans3d  -rx -90  $1_${NAME}_c.ply $1_${NAME}_c_r.ply
+trans3d  -tz 0.02 $1_${NAME}_c_r.ply $1_${NAME}_c_r_t.ply
+trans3d  -rz 180 $1_${NAME}_c_r_t.ply $1.ply
+
+info3d $1.ply
+
+
