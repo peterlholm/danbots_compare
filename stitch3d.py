@@ -202,6 +202,8 @@ def get_transformations(ref, test_target, voxel_size):
         print(f"Global registration result: Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")
     if _DEBUG:
         print("global transformation matrix", result_ransac, np.around(result_ransac.transformation,3))
+        print("Transformation Matrix\n", result_ransac.transformation)
+       
         draw_registration_result(ref_down, test_down, result_ransac.transformation, window_name="Global registration")
     if result_ransac.fitness < GLOBAL_FITNESS or result_ransac.inlier_rmse > GLOBAL_RMSE:
         print(f"BAD GLOBAL REGISTRATION Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")

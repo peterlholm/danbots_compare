@@ -18,7 +18,7 @@
             "request": "launch",
             "program": "show3d.py",
             "args": ["-v", "-a", "-r",
-                "testdata/testobject/obj1/test_object.stl"],
+                "testdata/testobject/ph_obj/test_object.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -28,7 +28,7 @@
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/trans/wand.ply"],
+            "args": ["-v", "-a", "-d", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/trans/wand.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -38,7 +38,7 @@
             "type": "python",
             "request": "launch",
             "program": "compare3d.py",
-            "args": [ "-v", "-s", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/test_object_p10K.ply"],
+            "args": [ "-v", "-s", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/test_object_p10K.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -47,7 +47,7 @@
             "type": "python",
             "request": "launch",
             "program": "compare3d.py",
-            "args": ["-v", "-a", "-d", "-s", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/trans/wand.ply"],
+            "args": ["-v", "-a", "-d", "-s", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/trans/wand.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -66,7 +66,7 @@
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "testdata/testobject/obj1/test_object_p1M.ply", "testdata/testobject/obj1/trans/wand.ply"],
+            "args": ["-v", "-a", "-d", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/trans/wand.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -102,7 +102,7 @@
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-s", "-a", "-x", "-0.021", "-y", "-0.1", "-z", "0.1", "testdata/testobject/obj1/test_object_p10000.ply", "testdata/testobject/obj1/trans/test_object_p10000_tx-0.021y-0.01z0.1.ply"],
+            "args": ["-v", "-s", "-a", "-x", "-0.021", "-y", "-0.1", "-z", "0.1", "testdata/testobject/ph_obj/test_object_p10000.ply", "testdata/testobject/ph_obj/trans/test_object_p10000_tx-0.021y-0.01z0.1.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -111,7 +111,7 @@
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-a", "-s", "-rx", "30", "-ry", "0.00", "-rz", "0.00", "testdata/testobject/obj1/test_object_p10K.ply", "testdata/testobject/obj1/trans/rotate_30_0_0.ply"],
+            "args": ["-v", "-a", "-s", "-rx", "30", "-ry", "0.00", "-rz", "0.00", "testdata/testobject/ph_obj/test_object_p10K.ply", "testdata/testobject/ph_obj/trans/rotate_30_0_0.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -120,7 +120,7 @@
             "type": "python",
             "request": "launch",
             "program": "trans3d.py",
-            "args": ["-v", "-a", "-s", "-rx", "10.0", "-ry", "20.0", "-rz", "30.0", "testdata/testobject/obj1/test_object_p10K.ply", "testdata/testobject/obj1/trans/rotate_10_20_30.ply"],
+            "args": ["-v", "-a", "-s", "-rx", "10.0", "-ry", "20.0", "-rz", "30.0", "testdata/testobject/ph_obj/test_object_p10K.ply", "testdata/testobject/ph_obj/trans/rotate_10_20_30.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -138,21 +138,46 @@
             "name": "Stitch test - ENS",
             "type": "python",
             "request": "launch",
-            "program": "stitch/stitch.py",
-            "args": ["-v", "-d",
-                "testdata/testobject/obj1/test_object_p1M.ply",
-                "testdata/testobject/obj1/test_object_p10K.ply"
+            "program": "stitch3d.py",
+            "args": ["-s",
+                "testdata/testobject/ph_obj/test_object_p1M.ply",
+                "testdata/testobject/ph_obj/test_object_p10K.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Stitch scale",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch3d.py",
+            "args": ["-v", "-d",
+                "testdata/testobject/ph_obj/test_object_p1M.ply",
+                "testdata/testobject/ph_obj/trans/scale_05.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Stitch trans",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch3d.py",
+            "args": ["-v",
+                "testdata/testobject/ph_obj/test_object_p1M.ply",
+                "testdata/testobject/ph_obj/trans/trans_0102.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
         {
             "name": "Stitch 2 forskellige",
             "type": "python",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-v", "-d",
-                "testdata/testobject/obj1/test_object_p1M.ply",
+                "testdata/testobject/ph_obj/test_object_p1M.ply",
                 "testdata/pcl/tooth/Tand/tand.ply"
             ],
             "console": "integratedTerminal",
@@ -165,8 +190,8 @@
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-v", 
-                "testdata/testobject/obj1/test_object_p1M.ply",
-                "testdata/testobject/obj1/trans/trans_0.0004.ply"
+                "testdata/testobject/ph_obj/test_object_p1M.ply",
+                "testdata/testobject/ph_obj/trans/trans_0.0004.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -177,8 +202,8 @@
             "request": "launch",
             "program": "stitch3d.py",
             "args": [ "-v", "-s", "-d",
-                "testdata/testobject/tand2/test_object_p1M_90A.ply",
-                "testdata/testobject/tand2/wand/pointcloud_c.ply"
+                "testdata/testobject/lower/tand2.ply",
+                "testdata/testobject/lower/wand/test.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -189,8 +214,8 @@
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-o", "out.ply", "-v", "-s",
-                "testdata/testobject/obj1/test_object_p1M.ply",
-                "testdata/testobject/obj1/trans/rotate_10_20_30.ply"
+                "testdata/testobject/ph_obj/test_object_p1M.ply",
+                "testdata/testobject/ph_obj/trans/rotate_10_20_30.ply"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
