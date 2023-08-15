@@ -120,8 +120,7 @@ if __name__ == "__main__":
             print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")
         print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
     else:
-        print(f"{rms:.6f}  {vmin:.6f}  {vmax:.6f}  {mean:.6f} ")
-        print(f"{rms/obj_size:.3f} {vmin/obj_size:.3f} {vmax/obj_size:.3f} {mean/obj_size:.3f}")
+        print(f"{rms:.6f} {vmin:.6f} {vmax:.6f} {mean:.6f} {rms/obj_size:.3f} {vmin/obj_size:.3f} {vmax/obj_size:.3f} {mean/obj_size:.3f}")
 
     if _SHOW:
         show_pcls(in_pcl, t_pcl, axis=args.a)

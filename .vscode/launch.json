@@ -39,7 +39,7 @@
             "type": "python",
             "request": "launch",
             "program": "compare3d.py",
-            "args": [ "-v", "-s", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/test_object_p10K.ply"],
+            "args": [ "-v", "-s", "--script", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/test_object_p10K.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -249,7 +249,7 @@
             "type": "python",
             "request": "launch",
             "program": "stitch3d.py",
-            "args": ["-o", "out.ply", "-v", "-s", "-a", "-d", "-e",
+            "args": ["-o", "out.ply", "-v", "-s", "-a", "-e",
                 "testdata/testobject/ph_obj/test_object_p100K.ply",
                 "testdata/testobject/ph_obj/test/test_cut_rt.ply"
             ],
