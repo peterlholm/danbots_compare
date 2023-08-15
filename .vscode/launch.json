@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Python: Current File",
             "type": "python",
@@ -230,10 +231,30 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
-        }
-
-
-
-
+        },
+        {
+            "name": "Stitch ph_obj pease",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch3d.py",
+            "args": ["-o", "out.ply", "-v", "-s", "-a",
+                "testdata/testobject/ph_obj/test_object_p100K.ply",
+                "testdata/testobject/ph_obj/test/test_cut_t_3_4_5.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Stitch ph_obj rotate",
+            "type": "python",
+            "request": "launch",
+            "program": "stitch3d.py",
+            "args": ["-o", "out.ply", "-v", "-s", "-a", "-d", "-e",
+                "testdata/testobject/ph_obj/test_object_p100K.ply",
+                "testdata/testobject/ph_obj/test/test_cut_rt.ply"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
     ]
 }

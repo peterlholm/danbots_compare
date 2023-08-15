@@ -3,6 +3,7 @@
 import sys
 import math
 import copy
+import subprocess
 from pathlib import Path
 import argparse
 import numpy as np
@@ -106,10 +107,10 @@ VOXEL_SIZE = 0.0005
 
 # registration
 
-GLOBAL_FITNESS = 0.5
+GLOBAL_FITNESS = 0.6
 GLOBAL_RMSE = 0.001
-GLOBAL_FITNESS = 0.2
-GLOBAL_RMSE = 0.001
+#GLOBAL_FITNESS = 0.2
+#GLOBAL_RMSE = 0.001
 LOCAL_FITNESS = 0.2
 LOCAL_RMSE = 0.001
 
@@ -124,7 +125,7 @@ def draw_registration_result(reference, test_source, transformation, axis=False,
     test_temp.transform(transformation)
     pointclouds =[reference_temp, test_temp]
     if axis:
-        axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(size=1, origin=[0, 0, 0])
+        axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.01, origin=[0, 0, 0])
         pointclouds.append(axis_pcd)
     o3d.visualization.draw_geometries(pointclouds, window_name=window_name, width=1000, height=1000)
 
@@ -203,7 +204,6 @@ def get_transformations(ref, test_target, voxel_size):
     if _DEBUG:
         print("global transformation matrix", result_ransac, np.around(result_ransac.transformation,3))
         print("Transformation Matrix\n", result_ransac.transformation)
-       
         draw_registration_result(ref_down, test_down, result_ransac.transformation, window_name="Global registration")
     if result_ransac.fitness < GLOBAL_FITNESS or result_ransac.inlier_rmse > GLOBAL_RMSE:
         print(f"BAD GLOBAL REGISTRATION Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")
@@ -316,7 +316,7 @@ def stitch_trans(reference, new, use_cleaning= False, use_color=False, debug=_DE
         show_objects(objects)
 
     test_target, transformation = reg_point_clouds(ref_pcl, new_pcl)
-    if test_target == False:
+    if test_target is False:
         return None
     if debug:
         print("Regisering test_target", test_target)
@@ -336,9 +336,11 @@ if __name__ == "__main__":
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', '--show', required=False, help="Show the stitch result", action='store_true' )
     parser.add_argument('-c', '--clean', required=False, help="Clean the point clounds", action='store_true' )
+    parser.add_argument('-a', '--axis', required=False, help="Add axis to pictures", action='store_true' )
     parser.add_argument('org_file', type=Path, help="The original stl or pointcloud")
     parser.add_argument('test_file', type=Path, help="The pointcloud to be measured")
     parser.add_argument('-o', '--outfile', required=False, nargs=1, help="Make an output file", action='store' )
+    parser.add_argument('-e', '--error', required=False, help="calculate error with compare", action='store_true' )
     args = parser.parse_args()
 
     _DEBUG = args.d
@@ -384,4 +386,12 @@ if __name__ == "__main__":
         print("Saving result to:", args.outfile[0])
         trans_file(t_pcl, args.outfile[0], transform)
     if args.show:
-        draw_registration_result(in_pcl, ot_pcl, transform, window_name="Stitch result", color=True)
+        draw_registration_result(in_pcl, ot_pcl, transform, window_name="Stitch result", color=True, axis=args.axis)
+
+    if args.error and args.outfile:
+        print("-- comparing original and test --")
+        cmd = ["compare3d", str(args.org_file), str(args.test_file)]
+        subprocess.run(cmd, check=False)
+        print("-- comparing original and result --")
+        cmd = ["compare3d", str(args.org_file), args.outfile[0]]
+        subprocess.run(cmd, check=False)
