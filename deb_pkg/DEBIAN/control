@@ -1,0 +1,14 @@
+Package: 3d-tools
+Version: 1.0.1
+Architecture: all
+Maintainer: Peter Holm <peter@lL-Holm.dk>
+Section: Utilities
+Description: Tools for handling 3D point clouds.
+ The package include the following tools:
+ .
+  compare3d  compare a pointclout to a refference stl or pointcloud
+  trans3d    Make transfomation to pointcloud
+  crop3d     Crop a pointcloud
+  conv3d     Convert a pointcloud
+  info3d     Print information on a poincloud
+  mirror3d   Mirror a pointcloud
