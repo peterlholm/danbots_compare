@@ -134,12 +134,13 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        // stitching
         {
             "name": "Stitch test - ENS",
             "type": "python",
             "request": "launch",
             "program": "stitch3d.py",
-            "args": ["-s",
+            "args": ["-s", "-v",
                 "testdata/testobject/ph_obj/test_object_p1M.ply",
                 "testdata/testobject/ph_obj/test_object_p10K.ply"
             ],
@@ -151,7 +152,7 @@
             "type": "python",
             "request": "launch",
             "program": "stitch3d.py",
-            "args": ["-v", "-d",
+            "args": ["-v", "--scaling",
                 "testdata/testobject/ph_obj/test_object_p1M.ply",
                 "testdata/testobject/ph_obj/trans/scale_05.ply"
             ],
@@ -163,7 +164,7 @@
             "type": "python",
             "request": "launch",
             "program": "stitch3d.py",
-            "args": ["-v",
+            "args": ["-v", "-s", "-d", "--scaling",
                 "testdata/testobject/ph_obj/test_object_p1M.ply",
                 "testdata/testobject/ph_obj/trans/trans_0102.ply"
             ],
@@ -220,6 +221,7 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        // crop
         {
             "name": "Crop",
             "type": "python",

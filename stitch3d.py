@@ -186,29 +186,31 @@ def execute_local_registration(source_down, reference_down, voxel_size,
 
 def prepare_dataset(ref, test_target, voxel_size):
     "prepare data set "
+    if _DEBUG:
+        print(" -- preprocessing reference")
     ref_down, ref_fpfh = preprocess_point_cloud(ref, voxel_size)
+    if _DEBUG:
+        print(" -- preprocessing target")
     test_target_down, test_target_fpfh = preprocess_point_cloud(test_target, voxel_size)
     return ref_down, test_target_down, ref_fpfh, test_target_fpfh
 
-def get_transformations(ref, test_target, voxel_size):
+def get_transformations(ref, test_target, voxel_size, scaling=False):
     "get transformations from pointclouds"
     ref_down, test_down, ref_fpfh, test_fpfh = prepare_dataset(ref, test_target, voxel_size)
     if _DEBUG:
         o3d.visualization.draw_geometries([ref_down, test_down], window_name="downsample", width=1000, height=1000)
-    result_ransac = execute_global_registration(
-            ref_down, test_down, ref_fpfh, test_fpfh,
-            voxel_size)
+    result_ransac = execute_global_registration(ref_down, test_down, ref_fpfh, test_fpfh, voxel_size, scale=scaling)
     if _VERBOSE:
         print(f"Global registration result: Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")
     if _DEBUG:
         print("global transformation matrix", result_ransac, np.around(result_ransac.transformation,3))
         print("Transformation Matrix\n", result_ransac.transformation)
-       
         draw_registration_result(ref_down, test_down, result_ransac.transformation, window_name="Global registration")
     if result_ransac.fitness < GLOBAL_FITNESS or result_ransac.inlier_rmse > GLOBAL_RMSE:
         print(f"BAD GLOBAL REGISTRATION Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")
         return False, None
-
+    if _DEBUG:
+        print("-- local registration --")
     result_icp = execute_local_registration(
             test_down, ref_down,
             voxel_size, result_ransac.transformation)
@@ -286,25 +288,24 @@ def clean_point_cloud(pcd, epsilon=0.35, minimum_points=7, required_share =0.06)
         print(f"Kept points: {len(kept_indicies)} Removing  {len(pcd.points) - len(kept_indicies)}")
     return pcd_result
 
-def reg_point_clouds(ref, new):
-    "register point cloud and find tranformatin bringing new to ref"
-    test_target, transformation = get_transformations(ref, new, VOXEL_SIZE)
-    return test_target, transformation
+# def reg_point_clouds(ref, new):
+#     "register point cloud and find tranformatin bringing new to ref"
+#     test_target, transformation = get_transformations(ref, new, VOXEL_SIZE, scaling=args.scaling)
+#     return test_target, transformation
 
-def stitch_trans(reference, new, use_cleaning= False, use_color=False, debug=_DEBUG):
+def stitch_trans(reference, new, use_cleaning= False, use_color=False, scaling=False, debug=_DEBUG):
     "Get the best transformation for new"
     ref_pcl = copy.deepcopy(reference)
     new_pcl = copy.deepcopy(new)
     color=True
     if debug:
-        print(f"Registation with color: {use_color}")
+        print(f"Registration with color: {use_color} and scaling: {scaling}")
         print(f"Reference: {len(ref_pcl.points):8} Points, Color: {ref_pcl.has_colors()}")
         print(f"Test:      {len(new_pcl.points):8} Points, Color: {new_pcl.has_colors()}")
         color = True
     if color:
         ref_pcl.paint_uniform_color((0,1,0))
         new_pcl.paint_uniform_color((1,0,0))
-
     if debug:
         show_objects([ref_pcl, new_pcl], name="Original clouds")
     if use_cleaning:   # cleaning
@@ -314,9 +315,11 @@ def stitch_trans(reference, new, use_cleaning= False, use_color=False, debug=_DE
         color_obj(c_test)
         objects = [c_org, c_test]
         show_objects(objects)
-
-    test_target, transformation = reg_point_clouds(ref_pcl, new_pcl)
-    if test_target == False:
+    if _DEBUG:
+        print("-- registration --")
+    test_target, transformation = get_transformations(ref_pcl, new_pcl, VOXEL_SIZE, scaling=scaling)
+    #reg_point_clouds(ref_pcl, new_pcl)
+    if not test_target:
         return None
     if debug:
         print("Regisering test_target", test_target)
@@ -339,6 +342,7 @@ if __name__ == "__main__":
     parser.add_argument('org_file', type=Path, help="The original stl or pointcloud")
     parser.add_argument('test_file', type=Path, help="The pointcloud to be measured")
     parser.add_argument('-o', '--outfile', required=False, nargs=1, help="Make an output file", action='store' )
+    parser.add_argument('--scaling', required=False, help="Apply scaling for matching", action='store_true' )
     args = parser.parse_args()
 
     _DEBUG = args.d
@@ -369,12 +373,13 @@ if __name__ == "__main__":
         sys.exit(8)
     #
     ot_pcl = copy.deepcopy(t_pcl)
+    # stitch
     transform = stitch_trans(in_pcl, t_pcl, debug=args.d, use_cleaning=args.clean)
     if transform is None:
         print("No transformation found")
         sys.exit(1)
     print("Resulting Transformation:\n", transform)
-    #
+    # decode
     trans, t_rot, t_scale = decode_transformation(transform)
     print(f"Translation: {trans}\nRotation: {t_rot}\nScale {t_scale}" )
     if transform is None:

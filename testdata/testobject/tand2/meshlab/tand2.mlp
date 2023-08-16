@@ -1,0 +1,24 @@
+<!DOCTYPE MeshLabDocument>
+<MeshLabProject>
+ <MeshGroup>
+  <MLMesh visible="1" label="tand-nr2.stl" filename="tand-nr2.stl">
+   <MLMatrix44>
+1 0 0 0 
+0 1 0 0 
+0 0 1 0 
+0 0 0 1 
+</MLMatrix44>
+   <RenderingOption pointSize="3" boxColor="234 234 234 255" pointColor="131 149 69 255" wireWidth="1" solidColor="192 192 192 255" wireColor="64 64 64 255">100001000000000000000000000001011001000010100000000100111011100000001001</RenderingOption>
+  </MLMesh>
+  <MLMesh visible="1" label="test_object_1M.ply" filename="test_object_1M.ply">
+   <MLMatrix44>
+1 0 0 0 
+0 1 0 0 
+0 0 1 0 
+0 0 0 1 
+</MLMatrix44>
+   <RenderingOption pointSize="3" boxColor="234 234 234 255" pointColor="131 149 69 255" wireWidth="1" solidColor="192 192 192 255" wireColor="64 64 64 255">000111010000000000000000000000000000000010100000000100111010110000001101</RenderingOption>
+  </MLMesh>
+ </MeshGroup>
+ <RasterGroup/>
+</MeshLabProject>
