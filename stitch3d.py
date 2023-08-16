@@ -322,10 +322,10 @@ def stitch_trans(reference, new, use_cleaning= False, use_color=False, scaling=F
     test_target, transformation = get_transformations(ref_pcl, new_pcl, VOXEL_SIZE, scaling=scaling)
     #reg_point_clouds(ref_pcl, new_pcl)
     if not test_target:
-
-    test_target, transformation = reg_point_clouds(ref_pcl, new_pcl)
-    if test_target is False:
         return None
+    # test_target, transformation = reg_point_clouds(ref_pcl, new_pcl)
+    # if test_target is False:
+    #     return None
     if debug:
         print("Regisering test_target", test_target)
         print("Regisering transformation:", transformation)
