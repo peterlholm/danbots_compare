@@ -104,16 +104,25 @@ def get_cluster_indicies(clusters, cluster):
 
 #VOXEL_SIZE = 0.0001
 VOXEL_SIZE = 0.0005
+VOXEL_SIZE = 1.0005
 
 # registration
 
 GLOBAL_FITNESS = 0.6
 GLOBAL_RMSE = 0.001
-#GLOBAL_FITNESS = 0.2
-#GLOBAL_RMSE = 0.001
+
+# gebis
+GLOBAL_FITNESS = 0.2
+GLOBAL_RMSE = 0.8
+
+
 LOCAL_FITNESS = 0.2
 LOCAL_FITNESS = 0.7
 LOCAL_RMSE = 0.001
+
+# GEBIS
+LOCAL_FITNESS = 0.7
+LOCAL_RMSE = 0.4
 
 
 def draw_registration_result(reference, test_source, transformation, axis=False, window_name="registration result", color=False):
@@ -208,8 +217,9 @@ def get_transformations(ref, test_target, voxel_size, scaling=False):
         print("global transformation matrix", result_ransac, np.around(result_ransac.transformation,3))
         print("Transformation Matrix\n", result_ransac.transformation)
         draw_registration_result(ref_down, test_down, result_ransac.transformation, window_name="Global registration")
-    if result_ransac.fitness < GLOBAL_FITNESS or result_ransac.inlier_rmse > GLOBAL_RMSE:
-        print(f"BAD GLOBAL REGISTRATION Fitness: {result_ransac.fitness:.2f} RMSE: {result_ransac.inlier_rmse:.6f}")
+        print(GLOBAL_FITNESS, GLOBAL_RMSE)
+    if (result_ransac.fitness < GLOBAL_FITNESS) or (result_ransac.inlier_rmse > GLOBAL_RMSE):
+        print(f"BAD GLOBAL REGISTRATION Fitness: {result_ransac.fitness:.2f}({GLOBAL_FITNESS}) RMSE: {result_ransac.inlier_rmse:.6f} ({GLOBAL_RMSE})")
         return False, None
     if _DEBUG:
         print("-- local registration --")
@@ -222,7 +232,7 @@ def get_transformations(ref, test_target, voxel_size, scaling=False):
         print("Local transformation matrix", result_icp, np.around(result_icp.transformation,3))
         draw_registration_result(ref_down, test_down, result_icp.transformation, window_name="Local registration downsample")
     if result_icp.fitness < LOCAL_FITNESS or result_icp.inlier_rmse >LOCAL_RMSE:
-        print(f"BAD LOCAL REGISTRATION Fitness: {result_icp.fitness:.2f} RMSE: {result_icp.inlier_rmse:.6f}")
+        print(f"BAD LOCAL REGISTRATION Fitness: {result_icp.fitness:.2f} ({LOCAL_FITNESS}) RMSE: {result_icp.inlier_rmse:.6f} ({LOCAL_RMSE} )")
         return None, None
     if _DEBUG:
         draw_registration_result(ref, test_target, result_icp.transformation, window_name="Local registration originals")
