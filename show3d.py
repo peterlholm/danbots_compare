@@ -8,30 +8,10 @@ import open3d as o3d
 _DEBUG = True
 _VERBOSE=True
 ZOOM = 0.6
-CAM_POSITION = [2.0, 0.1, -3]
-LOOK_AT = (-0.004, -0.05, 6.0)
-UP = (-1.0, 0.0, 0.0)
+CAM_POSITION = [0.0, 0.0, 30]
+LOOK_AT = (-0.004, -0.05, 0.0)
+UP = (0.0, 1.0, 0.0)
 
-
-def surface_to_pcl(mesh, alg="poisson", no_points=10000):
-    "convert mesh surfaces to pointcloud, point_factor vertices/points"
-    # if _DEBUG:
-    #     mesh_info(mesh)
-    # if not points is None:
-    #     no_points = points
-    # else:
-    #     no_points = len(mesh.vertices)//point_factor
-    if _DEBUG:
-        print("ALGOrithm poisson", alg=="poisson")
-    if alg=='poisson':
-        pcl = mesh.sample_points_poisson_disk(number_of_points=no_points)
-    elif alg=='uniformly':
-        pcl = mesh.sample_points_uniformly(number_of_points=no_points)
-    else:
-        print("unknown sampling")
-        sys.exit(2)
-    #print("Resulting number of points", no_points)
-    return pcl
 
 def obj_size(obj : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
@@ -43,15 +23,15 @@ def obj_size(obj : o3d.geometry.TriangleMesh):
     s = s / 3
     return s
 
-
 def show_objects(objlist, name=""):
     "Show the object list"
     o3d.visualization.draw_geometries(objlist, window_name=name, width=1000, height=1000, point_show_normal=False, mesh_show_wireframe=False)
 
 def show_objects_test(obj, name=""):
     "Show the object list"
+    #print(f"CAM {CAM_POSITION} LOOK_AT {LOOK_AT} UP {UP} ZOOM {ZOOM}")
     o3d.visualization.draw_geometries(obj, window_name=name, width=1000, height=1000,
-                                       zoom=ZOOM, front=CAM_POSITION, lookat=LOOK_AT, up=[0,1,0])
+                                       zoom=ZOOM, front=CAM_POSITION, lookat=LOOK_AT, up=UP)
 
 def pcl2pic(objects, name="", outfile=None):
     "Make a jpg file from pcl"
@@ -115,8 +95,11 @@ if __name__ == "__main__":
 
     _DEBUG=args.d
     _VERBOSE = args.v
+
+    args.r = True
+
     if _DEBUG:
-        print(args)
+        print("Args", args)
 
     fil1 = args.file1
     if _VERBOSE:
@@ -133,21 +116,24 @@ if __name__ == "__main__":
     if fil1.suffix=='.stl':
         mymesh = o3d.io.read_triangle_mesh(str(fil1))
         # if not mesh.has_triangle_colors():
-        add_tecture(mymesh)
+        # todo: add_tecture(mymesh)
         if args.color:
             mymesh.paint_uniform_color((0,1,0))
-        if not mymesh.has_vertex_normals():
-            if _VERBOSE:
-                print("adding vertex normals to file1")
-            mymesh.compute_vertex_normals()
+        # vertex normals not requiered for display
+        # if not mymesh.has_vertex_normals():
+        #     if _VERBOSE:
+        #         print("adding vertex normals to file1")
+        #     mymesh.compute_vertex_normals()
+        # elif _VERBOSE:
+        #     print("File have vertex normals")
         if not mymesh.has_triangle_normals():
+            if _DEBUG:
+                print("adding triangle normals to file")
             mymesh.compute_triangle_normals()
-            if _VERBOSE:
-                print("adding triangle normals to file1")
         size = obj_size(mymesh)
-        #mypcl = surface_to_pcl(mymesh)
         vobjects.append(mymesh)
-        #in_pcl = stl2pcl(mesh)
+        if _DEBUG:
+            print(f"Number of vertices {len(mymesh.vertices)} Triangles: {len(mymesh.triangles)}")
     elif fil1.suffix=='.ply':
         mypcl = o3d.io.read_point_cloud(str(fil1))
         if args.color:
@@ -159,6 +145,7 @@ if __name__ == "__main__":
     else:
         print("Input file type error")
         sys.exit(1)
+        #print(vobjects)
 
     window_name = fil1.name
 
@@ -181,23 +168,19 @@ if __name__ == "__main__":
 
     if _VERBOSE:
         print("Object center", vobjects[0].get_center())
-        print(f"Object size: {size} m")
+        print(f"Object size: {size:.3f} ")
 
     if args.axis:
         if size > 1:
-            ASIZE = 1
+            ASIZE = 10
         else:
             ASIZE = 0.01
         if _DEBUG:
             print("Axis size", ASIZE)
-        print("Asize", ASIZE)
         coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=ASIZE,origin=(0,0,0))
         vobjects.append(coord)
-    if _DEBUG:
-        print("Number of objects:", len(vobjects))
-        print(vobjects)
     if args.r:
-        show_objects(vobjects, name=window_name)
-        #show_objects_test(vobjects, name=window_name)
+        #show_objects(vobjects, name=window_name)
+        show_objects_test(vobjects, name=window_name)
     else:
         pcl2pic(vobjects, name=window_name, outfile=args.write)

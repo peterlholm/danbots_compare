@@ -5,6 +5,7 @@
 #   230817  PLH     STL info updated
 import sys
 from pathlib import Path
+import math
 import argparse
 #import numpy as np
 import open3d as o3d
@@ -74,6 +75,7 @@ def obj_info(obj):
         resolution = len(obj.vertices) /obj.get_surface_area()
         print(f"Unit:          {unit}")
         print(f"Resolution:    {resolution:.4} point / unit*2")
+        print(f"Point Dist:    {math.sqrt(resolution):.4f} point / unit ({(1/math.sqrt(resolution)):.3f} unit/point)")
 
 
 if __name__ == "__main__":
