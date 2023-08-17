@@ -65,16 +65,16 @@ def pcl2pic(objects, name="", outfile=None):
             print(f"Witing to outfile {outfile}")
         vis.capture_screen_image("ud.png", do_render=True)
 
-def add_tecture(mesh):
-    mesh_center = mesh.get_axis_aligned_bounding_box().get_center()
-    mesh.material.set_default_properties()
-    mesh.material.material_name = 'defaultLit'
-    mesh.material.scalar_properties['metallic'] = 1.0
-    mesh.material.texture_maps['albedo'] = o3d.t.io.read_image(dataset.path_map['albedo'])
-    mesh.material.texture_maps['roughness'] = o3d.t.io.read_image(dataset.path_map['roughness'])
-    mesh.material.texture_maps['metallic'] = o3d.t.io.read_image(dataset.path_map['metallic'])
+# def add_tecture(mesh):
+#     mesh_center = mesh.get_axis_aligned_bounding_box().get_center()
+#     mesh.material.set_default_properties()
+#     mesh.material.material_name = 'defaultLit'
+#     mesh.material.scalar_properties['metallic'] = 1.0
+#     mesh.material.texture_maps['albedo'] = o3d.t.io.read_image(dataset.path_map['albedo'])
+#     mesh.material.texture_maps['roughness'] = o3d.t.io.read_image(dataset.path_map['roughness'])
+#     mesh.material.texture_maps['metallic'] = o3d.t.io.read_image(dataset.path_map['metallic'])
 
-    mi_mesh = mesh.to_mitsuba('monkey')
+#     mi_mesh = mesh.to_mitsuba('monkey')
     #img = render_mesh(mi_mesh, mesh_center.numpy())
     #mi.Bitmap(img).write('test.exr')
 

@@ -29,31 +29,32 @@ def obj_info(obj):
     max_size = obj.get_max_bound()
     min_size = obj.get_min_bound()
     distx = max_size[0]-min_size[0]
-    disty = max_size[0]-min_size[0]
-    distz = max_size[0]-min_size[0]
+    disty = max_size[1]-min_size[1]
+    distz = max_size[2]-min_size[2]
     vol  = distx * disty * distz
     print(al_box)
     print(obj.get_oriented_bounding_box())
-    print(f"Size:          {distx:.3f} x {disty:.3f} x {distz:.3f}")
-    print(f"Vol:           {vol:.5f}")
+
+    newlist = sorted([distx, disty, distz])
+    area = newlist[1] * newlist[2]
+    print(f"SurfaceArea:   {area:.5f}")
     if isinstance(obj, o3d.geometry.PointCloud):
-        if obj.has_points():
-            print(f"Point:          {len(obj.points)}")
-            print(f"Colors:          {obj.has_points()}")
-        else:
-            print("Object has no colors")
-        if obj.has_normals():
-            print("Object has normals")
+        print(f"Point:         {len(obj.points)}")
+        print(f"Colors:        {obj.has_colors()}")
+        print(f"Normals:       {obj.has_normals()}")
+        print(f"Center:        {obj.get_center()}")
+        resolution = len(obj.points) / area
+        print(f"Est. Resol:    {resolution:.4} point / unit*2    ({(1/math.sqrt(resolution)):.3f} unit/point)")
+
 
     if isinstance(obj, o3d.geometry.TriangleMesh):
-        #print(f"Points:        {obj.has_points()}")
         print(f"Vertices:      {obj.has_vertices()}")   # hjørner
         print(f"Vertices:      {len(obj.vertices)}")
         print(f"Vertex Colors: {obj.has_vertex_colors()}")
         print(f"Vertex Normals:{obj.has_vertex_normals()}")
         if obj.has_triangles():
             print(f"Triangles:     {obj.has_triangles()}")
-            print(f"Triangles:     {len(obj.triangles)}")
+            print(f"Triangles #:   {len(obj.triangles)}")
             print(f"Triang.Normals:{obj.has_triangle_normals()}")
         print(f"TriMaterialID: {obj.has_triangle_material_ids()}")
         #print(obj.triangle_material_ids)
@@ -67,15 +68,20 @@ def obj_info(obj):
         print(f"SurfaceArea:   {obj.get_surface_area():.5f}")
         if obj.is_watertight():
             print(f"Volume     :   {obj.get_volume()}")
-        print("-----------------------------------------")
-        if obj_size(obj) > 2:
-            unit = "mm"
-        else:
-            unit = "m"
-        resolution = len(obj.vertices) /obj.get_surface_area()
-        print(f"Unit:          {unit}")
-        print(f"Resolution:    {resolution:.4} point / unit*2")
-        print(f"Point Dist:    {math.sqrt(resolution):.4f} point / unit ({(1/math.sqrt(resolution)):.3f} unit/point)")
+        resolution = len(obj.vertices) / obj.get_surface_area()
+        print(f"Area Resol.:   {resolution:.4} point / unit*2")
+ 
+    print("-----------------------------------------------------------")
+    print(f"Size:          {distx:.3f} x {disty:.3f} x {distz:.3f}")
+    print(f"Vol:           {vol:.5f}")
+    print(f"BoxArea:       {area:.5f}")
+
+    if obj_size(obj) > 2:
+        unit = "mm"
+    else:
+        unit = "m"
+    print(f"Unit:          {unit}")
+    print(f"Point Dist:    {math.sqrt(resolution):.4f} point / unit ({(1/math.sqrt(resolution)):.3f} unit/point)")
 
 
 if __name__ == "__main__":

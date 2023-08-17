@@ -42,8 +42,14 @@ def show_pcls(pcl1, pcl2, axis=False):
     pcl1.paint_uniform_color([0,1,0])
     pcl2.paint_uniform_color([0.1,0.0,0])
     objects = [pcl1, pcl2]
+    size = mesh_size(pcl1)
+    if size > 5:
+        asize = 10
+    else:
+        asize = 0.01
+    print ("Size", size)
     if axis:
-        axi = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.01, origin=(0,0,0))
+        axi = o3d.geometry.TriangleMesh.create_coordinate_frame(size=asize, origin=(0,0,0))
         objects.append(axi)
     o3d.visualization.draw_geometries(objects, width=1000, height=1000)
 
@@ -114,6 +120,7 @@ if __name__ == "__main__":
         print("Points in testfile", len(t_pcl.points))
 
     rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
+
     if not args.script:
         print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
         if _DEBUG:

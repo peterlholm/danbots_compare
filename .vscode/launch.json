@@ -19,20 +19,53 @@
             "request": "launch",
             "program": "info3d.py",
             "args": ["-v", "-d",
-                "testdata/stl/tooth/niels/test3 LowerJawScan.stl"],
+                "testdata/model/LowerJawScan.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "Show3d med testobject.stl",
+            "name": "Info3d med LowerJawScan_10k.ply",
+            "type": "python",
+            "request": "launch",
+            "program": "info3d.py",
+            "args": ["-v", "-d",
+                "testdata/model/LowerJawScan_10k.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Show3d LowerJawScan.stl",
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
             "args": ["-a",
-                "testdata/stl/tooth/niels/test3 LowerJawScan.stl"],
+                "testdata/model/LowerJawScan.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Show3d LowerJawScan.ply",
+            "type": "python",
+            "request": "launch",
+            "program": "show3d.py",
+            "args": ["-a",
+                "testdata/model/LowerJawScan.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+        {
+            "name": "Compare3d ORG med part of org",
+            "type": "python",
+            "request": "launch",
+            "program": "compare3d.py",
+            "args": [ "-v", "-s", "-a",
+                "testdata/stl/tooth/niels/test3 LowerJawScan.stl", "testdata/stl/tooth/niels/tand-1minus.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
+
 
         {
             "name": "Show3d med wand testfil and org",
