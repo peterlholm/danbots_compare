@@ -14,12 +14,22 @@
             "justMyCode": true
         },
         {
+            "name": "Info3d med LowerJawScan.stl",
+            "type": "python",
+            "request": "launch",
+            "program": "info3d.py",
+            "args": ["-v", "-d",
+                "testdata/stl/tooth/niels/test3 LowerJawScan.stl"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Show3d med testobject.stl",
             "type": "python",
             "request": "launch",
             "program": "show3d.py",
             "args": ["-v", "-a", "-r",
-                "testdata/testobject/ph_obj/test_object.stl"],
+                "testdata/stl/tooth/niels/test3 LowerJawScan.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },

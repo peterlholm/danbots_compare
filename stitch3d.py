@@ -34,6 +34,9 @@ def mesh_size(mesh : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
     max_size = mesh.get_max_bound()
     min_size = mesh.get_min_bound()
+
+    diameter = np.linalg.norm(np.asarray(max_size) - np.asarray(min_size))
+    print("diameter", diameter)
     s = 0
     for i in range(2):
         s += max_size[i] - min_size[i]
