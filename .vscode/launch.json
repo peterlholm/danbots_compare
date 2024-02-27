@@ -35,14 +35,24 @@
         },
         {
             "name": "Show3d LowerJawScan.stl",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "program": "show3d.py",
+            "program": "prg/show3d.py",
             "args": ["-a",
                 "testdata/model/LowerJawScan.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Show3d fortand.stl",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "prg/show3d.py",
+            "args": ["-a","testdata/stl/fortand.stl"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
         {
             "name": "Show3d LowerJawScan.ply",
             "type": "python",
