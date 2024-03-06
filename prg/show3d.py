@@ -29,9 +29,12 @@ def show_objects(objlist, name=""):
 
 def show_objects_test(obj, name=""):
     "Show the object list"
+    myobj = obj[0]
+    center=myobj.get_center()
+    print("Center", center)
     #print(f"CAM {CAM_POSITION} LOOK_AT {LOOK_AT} UP {UP} ZOOM {ZOOM}")
     o3d.visualization.draw_geometries(obj, window_name=name, width=1000, height=1000,
-                                       zoom=ZOOM, front=CAM_POSITION, lookat=LOOK_AT, up=UP)
+                                       zoom=ZOOM, front=CAM_POSITION, lookat=center, up=UP)
 
 def pcl2pic(objects, name="", outfile=None):
     "Make a jpg file from pcl"
@@ -119,6 +122,7 @@ if __name__ == "__main__":
         # todo: add_tecture(mymesh)
         if args.color:
             mymesh.paint_uniform_color((0,1,0))
+        if mymesh.
         # vertex normals not requiered for display
         # if not mymesh.has_vertex_normals():
         #     if _VERBOSE:

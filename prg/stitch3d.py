@@ -352,7 +352,7 @@ def trans_file(pcl, outfile, transformation):
     o3d.io.write_point_cloud(str(outfile), pcl)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog='stitch3d', description='Stitch two 3d files and calculate error figures. Return 1 if registration fails')
+    parser = argparse.ArgumentParser(prog='stitch3d', description='Stitch two 3d files, (original in stl or ply) and test object as (ply) and calculate error figures. Return 1 if registration fails')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', '--show', required=False, help="Show the stitch result", action='store_true' )
@@ -410,6 +410,9 @@ if __name__ == "__main__":
         trans_file(t_pcl, args.outfile[0], transform)
     if args.show:
         draw_registration_result(in_pcl, ot_pcl, transform, window_name="Stitch result", color=True, axis=args.axis)
+
+    if args.error and not args.outfile:
+        print("Outfile must be specified")
 
     if args.error and args.outfile:
         print("-- comparing original and test --")
