@@ -55,7 +55,7 @@ def obj_info(obj):
 
 if __name__ == "__main__":
     #PICFOLDER = Path(__file__).parent / 'testdata'
-    parser = argparse.ArgumentParser(description='Crop the model to the given size')
+    parser = argparse.ArgumentParser(description='Crop the model to the given size', epilog="See also info3d, show3d, trans3d, conv3d, mirror3d, stitch3d")
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', "--show", required=False, help="Show output", action='store_true' )

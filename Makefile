@@ -44,5 +44,6 @@ deb-pkg:	copy-pkg
 clean:
 	rm -rf $(PKG_FOLDER)
 	rm -f $(PKG_FOLDER).deb
+	rm -r tmp
 	rm -f out.ply
 
