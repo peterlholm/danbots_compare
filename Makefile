@@ -1,6 +1,6 @@
 # makefile for compare_pcl
 
-VERSION=1.0-2
+VERSION=1.1.0-1
 PKG_NAME=danbots-3d-tools-$(VERSION)
 PKG_FOLDER=tmp/package
 
@@ -40,6 +40,11 @@ deb-pkg:	copy-pkg
 	mkdir -p $(PKG_FOLDER)/DEBIAN
 	cp deb_pkg/DEBIAN/* $(PKG_FOLDER)/DEBIAN
 	dpkg-deb --build --root-owner-group $(PKG_FOLDER) tmp/$(PKG_NAME).deb
+
+
+pkg-push:
+	rcp tmp/$(PKG_NAME).deb  danbots:/var/www/apt/simple/pool/tools/
+	rsh danbots /var/www/apt/simple/scan
 
 clean:
 	rm -rf $(PKG_FOLDER)
