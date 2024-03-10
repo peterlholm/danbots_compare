@@ -100,19 +100,22 @@ if __name__ == "__main__":
     if not args.org_file.exists():
         print("input file does not exist")
         sys.exit(1)
-    # check file types
-    if args.out_file.suffix != '.ply':
-        print("only convertion to pointcloud supported")
-        sys.exit(2)
     if args.org_file.suffix=='.ply':
         # pcl imput
         inpcl = o3d.io.read_point_cloud(str(args.org_file))
         if _VERBOSE:
             obj_size = obj_size(inpcl)
             print(f"Input object size {obj_size:.2f} m")
+    elif args.org_file.suffix=='.stl':
+        inpcl = o3d.io.read_triangle_mesh(str(args.org_file))
     else:
         print("Input file type error")
         sys.exit(1)
+    # check output file types
+    if args.out_file.suffix in ['.ply', '.stl']:
+        if not Path(args.out_file).parent.exists():
+            print(f"output folder {args.out_file} does not exisit")
+            sys.exit(2)
 
     if _DEBUG:
         obj_info(inpcl)
@@ -140,9 +143,25 @@ if __name__ == "__main__":
         if _VERBOSE:
             print("Performing rotation", (args.rx,args.ry,args.rz))
         outpcl = rotate(inpcl,(args.rx,args.ry,args.rz))
- 
-    o3d.io.write_point_cloud(str(args.out_file), outpcl)
+
+    if isinstance(outpcl, o3d.cuda.pybind.geometry.PointCloud):
+        o3d.io.write_point_cloud(str(args.out_file), outpcl)
+    elif isinstance(outpcl, o3d.cuda.pybind.geometry.TriangleMesh):
+        outpcl.compute_triangle_normals()
+        o3d.io.write_triangle_mesh(str(args.out_file), outpcl)
+    else:
+        print("illegal output")
+
     if args.s:
+        if isinstance(outpcl, o3d.cuda.pybind.geometry.PointCloud):
+            if not outpcl.has_normals():
+                outpcl.compute_normals()
+        elif isinstance(outpcl, o3d.cuda.pybind.geometry.TriangleMesh):
+            if not outpcl.has_triangle_normals():
+                outpcl.compute_triangle_normals()
+        else:
+            print("wrong object type")
+
         objects = [org, outpcl]
         if args.axis:
             axis = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.01, origin=[0,0,0])

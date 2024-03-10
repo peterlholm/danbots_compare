@@ -5,10 +5,13 @@ from pathlib import Path
 import argparse
 import open3d as o3d
 import numpy as np
+from matplotlib import pyplot as plt
 
 _DEBUG = False
 _SHOW = False
 _VERBOSE = False
+
+MY = "µm"
 
 def mesh_size(mesh : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
@@ -69,7 +72,7 @@ def cmp2pcl(org_pcl, test_pcl):
         print(f"Max error:  {np.max(distance):.6f} m")
         print(f"Mean error: {np.mean(distance):.6f} m")
         print(f"RMS:        {pclerror:.6f} m")
-    return pclerror, np.min(distance), np.max(distance), np.mean(distance)
+    return pclerror, np.min(distance), np.max(distance), np.mean(distance), distance
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='compare3d', description='Compare two 3d files and calculate error figures')
@@ -77,6 +80,8 @@ if __name__ == "__main__":
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', required=False, help="Show output", action='store_true' )
     parser.add_argument('-a', required=False, help="Show axis", action='store_true' )
+    parser.add_argument('--histogram', required=False, help="Generate Histogram", action='store_true' )
+    parser.add_argument('-o', '--output', required=False, type=Path, help="Error Histogram Output file", metavar="Outputfile")
     parser.add_argument('--script', required=False, help="Scripting output", action='store_true' )
     parser.add_argument('org_file', help="The reference stl or pointcloud")
     parser.add_argument('test_file', help="The test pointcloud to be measured")
@@ -119,7 +124,7 @@ if __name__ == "__main__":
         print("Points in reference", len(in_pcl.points))
         print("Points in testfile", len(t_pcl.points))
 
-    rms, vmin, vmax, mean = cmp2pcl(in_pcl, t_pcl)
+    rms, vmin, vmax, mean, distarr = cmp2pcl(in_pcl, t_pcl)
 
     if not args.script:
         print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
@@ -131,3 +136,28 @@ if __name__ == "__main__":
 
     if _SHOW:
         show_pcls(in_pcl, t_pcl, axis=args.a)
+
+    if args.histogram or args.output:
+        no_points = len(distarr)
+        dist_u = distarr * 1000000
+        hist_arr, bin_edges = np.histogram(dist_u)
+        #fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
+        fig, axs = plt.subplots()
+        axs.set_title("Error distribution")
+        axs.set_xlabel("error in µm")
+        axs.set_ylabel("number points")
+        POS_X = 1000
+        POS_Y = 1600
+        DY=-100
+        # We can set the number of bins with the *bins* keyword argument.
+        axs.hist(dist_u, bins=10)
+        axs.text(0.70,0.20, f"No points: {no_points}",transform=axs.transAxes)
+        axs.text(POS_X, POS_Y+DY, f"RMSE: {rms*1000000:.0f} {MY}")
+        axs.text(POS_X, POS_Y+2*DY, f"MaxE: {vmax*1000000:.0f} {MY}")
+        axs.text(POS_X, POS_Y+3*DY, f"MinE: {vmin*1000000:.0f} {MY}")
+        #axs.text(POS_X, POS_Y+4*DY, f"MeanE: {mean*1000000:.0f} {MY}")
+        #axs[1].hist(dist2, bins=n_bins)
+        if args.histogram:
+            plt.show()
+        if args.output:
+            fig.savefig(args.output)

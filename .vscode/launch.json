@@ -7,7 +7,7 @@
 
         {
             "name": "Python: Current File",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -15,7 +15,7 @@
         },
         {
             "name": "Info3d med LowerJawScan.stl",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "prg/info3d.py",
             "args": ["-v", "-d",
@@ -25,7 +25,7 @@
         },
         {
             "name": "Info3d med LowerJawScan_10k.ply",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "info3d.py",
             "args": ["-v", "-d",
@@ -55,7 +55,7 @@
 
         {
             "name": "Show3d LowerJawScan.ply",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "show3d.py",
             "args": ["-a",
@@ -63,50 +63,18 @@
             "console": "integratedTerminal",
             "justMyCode": true
         },
-
         {
-            "name": "Compare3d ORG med part of org",
-            "type": "python",
+            "name": "Compare3d org med distorted 0.001",
+            "type": "debugpy",
             "request": "launch",
-            "program": "compare3d.py",
-            "args": [ "-v", "-s", "-a",
-                "testdata/stl/tooth/niels/test3 LowerJawScan.stl", "testdata/stl/tooth/niels/tand-1minus.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-
-
-
-        {
-            "name": "Show3d med wand testfil and org",
-            "type": "python",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/trans/wand.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Compare3d ORG med downsamplet org",
-            "type": "python",
-            "request": "launch",
-            "program": "compare3d.py",
-            "args": [ "-v", "-s", "--script", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/test_object_p10K.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Compare3d org med wand",
-            "type": "python",
-            "request": "launch",
-            "program": "compare3d.py",
-            "args": ["-v", "-a", "-d", "-s", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/trans/wand.ply"],
+            "program": "prg/compare3d.py",
+            "args": ["-v", "-a", "-d", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/dist_0.001.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
             "name": "Show3d med tand2",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "show3d.py",
             "args": ["-v", "-a", "-r", "-d", "testdata/testobject/tand2/tand-nr2.stl"],
@@ -116,7 +84,7 @@
 
         {
             "name": "Show3d med wand testfil and org",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "show3d.py",
             "args": ["-v", "-a", "-d", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/trans/wand.ply"],
@@ -125,7 +93,7 @@
         },
           {
             "name": "Verbose Compare3d med dist testfiler",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "compare3d.py",
             "args": ["-v","testdata/LJ3.stl", "testdata/LJ3_dist.ply"],
@@ -134,7 +102,7 @@
         },
         {
             "name": "Convert tand2",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "conv3d.py",
             "args": ["-v", "-d", "-n", "1000000", "-u", "testdata/testobject/tand2/tand-nr2.stl", "testdata/testobject/tand2/test_object_1M.ply"],
@@ -143,7 +111,7 @@
         },
         {
             "name": "Mirror PointCloud",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "mirror3d.py",
             "args": ["-v","testdata/testobject/render6/point_cloud2.ply", "testdata/testobject/render6/point_mirror.ply"],
@@ -152,35 +120,34 @@
         },
         {
             "name": "trans3d translate testobject",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "program": "trans3d.py",
+            "program": "prg/trans3d.py",
             "args": ["-v", "-s", "-a", "-x", "-0.021", "-y", "-0.1", "-z", "0.1", "testdata/testobject/ph_obj/test_object_p10000.ply", "testdata/testobject/ph_obj/trans/test_object_p10000_tx-0.021y-0.01z0.1.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "trans3d rotate testobject 30,0,0",
-            "type": "python",
+            "name": "trans3d rotate object 90,0,0",
+            "type": "debugpy",
             "request": "launch",
-            "program": "trans3d.py",
-            "args": ["-v", "-a", "-s", "-rx", "30", "-ry", "0.00", "-rz", "0.00", "testdata/testobject/ph_obj/test_object_p10K.ply", "testdata/testobject/ph_obj/trans/rotate_30_0_0.ply"],
+            "program": "prg/trans3d.py",
+            "args": ["-v", "-a", "-s", "-rx", "90", "-ry", "0.00", "-rz", "0.00", "testdata/stl/fortand.stl", "testdata/stl/fortand_90x.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
             "name": "trans3d rotate testobject 10,20,30",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
-            "program": "trans3d.py",
+            "program": "prg/trans3d.py",
             "args": ["-v", "-a", "-s", "-rx", "10.0", "-ry", "20.0", "-rz", "30.0", "testdata/testobject/ph_obj/test_object_p10K.ply", "testdata/testobject/ph_obj/trans/rotate_10_20_30.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
-
         {
             "name": "trans3d scale tand object",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "trans3d.py",
             "args": ["-v", "-a", "--scale", "0.001", "testdata/testobject/tand2/test_object_1M.ply", "testdata/testobject/tand2/test_object_1M_001.ply"],
@@ -190,7 +157,7 @@
         // stitching
         {
             "name": "Stitch test - ENS",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-s", "-v",
@@ -202,7 +169,7 @@
         },
         {
             "name": "Stitch scale",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-v", "--scaling",
@@ -214,7 +181,7 @@
         },
         {
             "name": "Stitch trans",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-v", "-s", "-d", "--scaling",
@@ -227,7 +194,7 @@
 
         {
             "name": "Stitch 2 forskellige",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-v", "-d",
@@ -240,7 +207,7 @@
 
         {
             "name": "Stitch test - 0.001",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-v", 
@@ -252,7 +219,7 @@
         },
        {
             "name": "Stitch Tand",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": [ "-v", "-s", "-d",
@@ -264,7 +231,7 @@
         },
         {
             "name": "Stitch rotation",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-o", "out.ply", "-v", "-s",
@@ -277,7 +244,7 @@
         // crop
         {
             "name": "Crop",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "crop3d.py",
             "args": ["-c", "-s", "-xl", "1.381","-yl", "0.11", "-yh", "200",
@@ -288,7 +255,7 @@
         },
         {
             "name": "Stitch ph_obj pease",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-o", "out.ply", "-v", "-s", "-a",
@@ -300,7 +267,7 @@
         },
         {
             "name": "Stitch ph_obj rotate",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "stitch3d.py",
             "args": ["-o", "out.ply", "-v", "-s", "-a", "-e",
