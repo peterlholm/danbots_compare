@@ -50,7 +50,7 @@ def show_pcls(pcl1, pcl2, axis=False):
         asize = 10
     else:
         asize = 0.01
-    print ("Size", size)
+    #print ("Size", size)
     if axis:
         axi = o3d.geometry.TriangleMesh.create_coordinate_frame(size=asize, origin=(0,0,0))
         objects.append(axi)
@@ -127,10 +127,10 @@ if __name__ == "__main__":
     rms, vmin, vmax, mean, distarr = cmp2pcl(in_pcl, t_pcl)
 
     if not args.script:
-        print(f"Point ABS distance Error: RMS: {rms:.6f} m Min: {vmin:.6f} m Max: {vmax:.6f} m Mean: {mean:.6f} m")
+        print(f"Point ABS distance Error: RMSE: {rms*1000000:.0f} {MY} MinE: {vmin*1000000:.0f} {MY} MaxE: {vmax*1000000:.0f} {MY} MeanE: {mean*1000000:.0f} {MY}")
         if _DEBUG:
             print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")
-        print(f"Point Rel distance Error: RMS: {rms/obj_size*100:.3f}% Min: {vmin/obj_size*100:.3f}% Max: {vmax/obj_size*100:.3f}% Mean: {mean/obj_size*100:.3f}%")
+        print(f"Point Rel distance Error: RMSE: {rms/obj_size*100:.3f}% MinE: {vmin/obj_size*100:.3f}% MaxE: {vmax/obj_size*100:.3f}% MeanE: {mean/obj_size*100:.3f}%")
     else:
         print(f"{rms:.6f} {vmin:.6f} {vmax:.6f} {mean:.6f} {rms/obj_size:.3f} {vmin/obj_size:.3f} {vmax/obj_size:.3f} {mean/obj_size:.3f}")
 
@@ -144,18 +144,18 @@ if __name__ == "__main__":
         #fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
         fig, axs = plt.subplots()
         axs.set_title("Error distribution")
-        axs.set_xlabel("error in µm")
-        axs.set_ylabel("number points")
-        POS_X = 1000
-        POS_Y = 1600
-        DY=-100
+        axs.set_xlabel("Error in µm")
+        axs.set_ylabel("Number points")
+        POS_X = 0.75
+        POS_Y = 0.95
+        DY=-0.05
         # We can set the number of bins with the *bins* keyword argument.
         axs.hist(dist_u, bins=10)
-        axs.text(0.70,0.20, f"No points: {no_points}",transform=axs.transAxes)
-        axs.text(POS_X, POS_Y+DY, f"RMSE: {rms*1000000:.0f} {MY}")
-        axs.text(POS_X, POS_Y+2*DY, f"MaxE: {vmax*1000000:.0f} {MY}")
-        axs.text(POS_X, POS_Y+3*DY, f"MinE: {vmin*1000000:.0f} {MY}")
-        #axs.text(POS_X, POS_Y+4*DY, f"MeanE: {mean*1000000:.0f} {MY}")
+        axs.text(POS_X, POS_Y, f"No points: {no_points}",transform=axs.transAxes)
+        axs.text(POS_X, POS_Y+DY, f"RMSE: {rms*1000000:.0f} {MY}",transform=axs.transAxes)
+        axs.text(POS_X, POS_Y+2*DY, f"MaxE: {vmax*1000000:.0f} {MY}",transform=axs.transAxes)
+        axs.text(POS_X, POS_Y+3*DY, f"MinE: {vmin*1000000:.0f} {MY}",transform=axs.transAxes)
+        #axs.text(POS_X, POS_Y+4*DY, f"MeanE: {mean*1000000:.0f} {MY}",transform=axs.transAxes)
         #axs[1].hist(dist2, bins=n_bins)
         if args.histogram:
             plt.show()

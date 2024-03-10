@@ -68,7 +68,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "prg/compare3d.py",
-            "args": ["-v", "-a", "-d", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/dist_0.001.ply"],
+            "args": ["-s", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/dist_0.001.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
