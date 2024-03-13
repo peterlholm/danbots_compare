@@ -19,7 +19,7 @@
             "request": "launch",
             "program": "prg/info3d.py",
             "args": ["-v", "-d",
-                "testdata/model/LowerJawScan.stl"],
+                "testdata/tooth/model/LowerJawScan.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -69,6 +69,15 @@
             "request": "launch",
             "program": "prg/compare3d.py",
             "args": ["-s", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/dist_0.001.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Compare3d org med trans rot distorted 0.001",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "prg/compare3d.py",
+            "args": ["-s", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/rot_trans_dist_0.0001.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -159,7 +168,7 @@
             "name": "Stitch test - ENS",
             "type": "debugpy",
             "request": "launch",
-            "program": "stitch3d.py",
+            "program": "prg/stitch3d.py",
             "args": ["-s", "-v",
                 "testdata/testobject/ph_obj/test_object_p1M.ply",
                 "testdata/testobject/ph_obj/test_object_p10K.ply"

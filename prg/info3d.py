@@ -3,20 +3,17 @@
 
 #   230501  PLH     First version
 #   230817  PLH     STL info updated
+#   240313  PLH     Cleanup
 import sys
 from pathlib import Path
 import math
 import argparse
-#import numpy as np
 import open3d as o3d
-
 
 def obj_size(mesh : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
     max_size = mesh.get_max_bound()
     min_size = mesh.get_min_bound()
-    #diameter = np.linalg.norm(np.asarray(max_size) - np.asarray(min_size))
-    #print("diameter", diameter)
     s = 0
     for i in range(2):
         s += max_size[i] - min_size[i]
@@ -46,7 +43,6 @@ def obj_info(obj):
         resolution = len(obj.points) / area
         print(f"Est. Resol:    {resolution:.4} point / unit*2    ({(1/math.sqrt(resolution)):.3f} unit/point)")
 
-
     if isinstance(obj, o3d.geometry.TriangleMesh):
         print(f"Vertices:      {obj.has_vertices()}")   # hjørner
         print(f"Vertices:      {len(obj.vertices)}")
@@ -69,8 +65,8 @@ def obj_info(obj):
         if obj.is_watertight():
             print(f"Volume     :   {obj.get_volume()}")
         resolution = len(obj.vertices) / obj.get_surface_area()
-        print(f"Area Resol.:   {resolution:.4} point / unit*2")
- 
+        print(f"Resolution:    {resolution:.4} point / unit*2")
+
     print("-----------------------------------------------------------")
     print(f"Size:          {distx:.3f} x {disty:.3f} x {distz:.3f}")
     print(f"Vol:           {vol:.5f}")
@@ -82,7 +78,6 @@ def obj_info(obj):
         unit = "m"
     print(f"Unit:          {unit}")
     print(f"Point Dist:    {math.sqrt(resolution):.4f} point / unit ({(1/math.sqrt(resolution)):.3f} unit/point)")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='info3d', description='Show information on 3d object files in .stl and .ply')

@@ -40,7 +40,7 @@ def surface_to_pcl(mesh, alg="poisson", number_of_points=100000, init_factor=10)
         pcl = mesh.sample_points_uniformly(number_of_points=number_of_points, init_factor=init_factor)
     return pcl
 
-def show_pcls(pcl1, pcl2, axis=False):
+def show_pcls(pcl1, pcl2, axis=False, name=""):
     "show pointcloud on screen"
     pcl1.paint_uniform_color([0,1,0])
     pcl2.paint_uniform_color([0.1,0.0,0])
@@ -54,7 +54,7 @@ def show_pcls(pcl1, pcl2, axis=False):
     if axis:
         axi = o3d.geometry.TriangleMesh.create_coordinate_frame(size=asize, origin=(0,0,0))
         objects.append(axi)
-    o3d.visualization.draw_geometries(objects, width=1000, height=1000)
+    o3d.visualization.draw_geometries(objects, width=1000, height=1000, window_name=name)
 
 def cmp2pcl(org_pcl, test_pcl):
     "compare 2 pcl a pointcloud and return a value for the error"
@@ -75,7 +75,7 @@ def cmp2pcl(org_pcl, test_pcl):
     return pclerror, np.min(distance), np.max(distance), np.mean(distance), distance
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog='compare3d', description='Compare two 3d files and calculate error figures')
+    parser = argparse.ArgumentParser(prog='compare3d', description='Compare two 3d files and calculate error figures\n\nSee also conv3d, crop3d, info3d, mirror3d, show3d, trans3d, stitch3d')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
     parser.add_argument('-s', required=False, help="Show output", action='store_true' )
@@ -135,7 +135,7 @@ if __name__ == "__main__":
         print(f"{rms:.6f} {vmin:.6f} {vmax:.6f} {mean:.6f} {rms/obj_size:.3f} {vmin/obj_size:.3f} {vmax/obj_size:.3f} {mean/obj_size:.3f}")
 
     if _SHOW:
-        show_pcls(in_pcl, t_pcl, axis=args.a)
+        show_pcls(in_pcl, t_pcl, axis=args.a, name="Org pointclouds")
 
     if args.histogram or args.output:
         no_points = len(distarr)
