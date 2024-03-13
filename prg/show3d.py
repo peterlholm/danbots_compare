@@ -66,7 +66,7 @@ def pcl2pic(objects, name="", outfile=None):
     if outfile:
         if _DEBUG:
             print(f"Witing to outfile {outfile}")
-        vis.capture_screen_image("ud.png", do_render=True)
+        vis.capture_screen_image(outfile, do_render=True)
 
 # def add_tecture(mesh):
 #     mesh_center = mesh.get_axis_aligned_bounding_box().get_center()
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--color', required=False, help="Add Collors to object", action="store_true")
     parser.add_argument('-nc', '--no_color', required=False, help="Add black color to obj", action="store_true")
     parser.add_argument('-w', "--write", action="store", type=str, required=False, help="Save image to file", metavar="imagefilename")
-    parser.add_argument('-r', action="store_true",required=False, help="Show with auto camera")
+    #parser.add_argument('-r', action="store_true",required=False, help="Show with auto camera")
     parser.add_argument('file1', type=Path, help="The first 3d file")
     parser.add_argument('file2', nargs="?", help="The second stl or pointcloud")
     #parser.add_argument('file3', nargs="*", help="More stl or pointcloud")
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     _DEBUG=args.d
     _VERBOSE = args.v
 
-    args.r = True
+    #args.r = False
 
     if _DEBUG:
         print("Args", args)
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         # todo: add_tecture(mymesh)
         if args.color:
             mymesh.paint_uniform_color((0,1,0))
-        if mymesh.
+
         # vertex normals not requiered for display
         # if not mymesh.has_vertex_normals():
         #     if _VERBOSE:
@@ -183,8 +183,8 @@ if __name__ == "__main__":
             print("Axis size", ASIZE)
         coord = o3d.geometry.TriangleMesh.create_coordinate_frame(size=ASIZE,origin=(0,0,0))
         vobjects.append(coord)
-    if args.r:
-        #show_objects(vobjects, name=window_name)
-        show_objects_test(vobjects, name=window_name)
-    else:
-        pcl2pic(vobjects, name=window_name, outfile=args.write)
+    # if args.r:
+    #     #show_objects(vobjects, name=window_name)
+    #     show_objects_test(vobjects, name=window_name, outfile=args.write)
+    # else:
+    pcl2pic(vobjects, name=window_name, outfile=args.write)

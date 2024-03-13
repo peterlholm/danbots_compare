@@ -55,6 +55,10 @@ def show_pcls(pcl1, pcl2, axis=False, name=""):
         axi = o3d.geometry.TriangleMesh.create_coordinate_frame(size=asize, origin=(0,0,0))
         objects.append(axi)
     o3d.visualization.draw_geometries(objects, width=1000, height=1000, window_name=name)
+    # lookat = (0,0,0)
+    # front=(4,4,4)
+    # up=(0,0,1)
+    # o3d.visualization.draw_geometries(objects, width=1000, height=1000, window_name=name, lookat=lookat, front=front, up=up, zoom=1)
 
 def cmp2pcl(org_pcl, test_pcl):
     "compare 2 pcl a pointcloud and return a value for the error"
@@ -62,7 +66,6 @@ def cmp2pcl(org_pcl, test_pcl):
         print("No Points in reference", len(org_pcl.points))
         print("No Points in testfile", len(test_pcl.points))
     dist = test_pcl.compute_point_cloud_distance(org_pcl)
-    #print(dist)
     distance = np.asarray(dist)
     if _DEBUG:
         print(distance)

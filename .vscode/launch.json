@@ -14,6 +14,24 @@
             "justMyCode": true
         },
         {
+            "name": "Compare3d org med distorted 0.001",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "prg/compare3d.py",
+            "args": ["-s", "-a", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/dist_0.001.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Compare3d org med trans rot distorted 0.001",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "prg/compare3d.py",
+            "args": ["-s", "-a","--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/rot_trans_dist_0.0001.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Info3d med LowerJawScan.stl",
             "type": "debugpy",
             "request": "launch",
@@ -27,19 +45,38 @@
             "name": "Info3d med LowerJawScan_10k.ply",
             "type": "debugpy",
             "request": "launch",
-            "program": "info3d.py",
+            "program": "prg/info3d.py",
             "args": ["-v", "-d",
-                "testdata/model/LowerJawScan_10k.ply"],
+                "testdata/tooth/model/LowerJawScan_10k.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
+        {
+            "name": "Mirror PointCloud",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "prg/mirror3d.py",
+            "args": ["-v","testdata/testobject/ph_obj/wand/render6/point_cloud2.ply", "testdata/testobject/ph_obj/wand/render6/point_mirror.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "registration3d org med distorted 0.001",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "prg/registration3d.py",
+            "args": ["-s", "-a", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/dist_0.001.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+
         {
             "name": "Show3d LowerJawScan.stl",
             "type": "debugpy",
             "request": "launch",
             "program": "prg/show3d.py",
             "args": ["-a",
-                "testdata/model/LowerJawScan.stl"],
+                "testdata/tooth/model/LowerJawScan.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -48,59 +85,11 @@
             "type": "debugpy",
             "request": "launch",
             "program": "prg/show3d.py",
-            "args": ["-a","testdata/stl/fortand.stl"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-
-        {
-            "name": "Show3d LowerJawScan.ply",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-a",
-                "testdata/model/LowerJawScan.ply"],
+            "args": ["-a", "-w", "tmp/output.png", "testdata/tooth/fortand.stl"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "Compare3d org med distorted 0.001",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "prg/compare3d.py",
-            "args": ["-s", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/dist_0.001.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Compare3d org med trans rot distorted 0.001",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "prg/compare3d.py",
-            "args": ["-s", "--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/rot_trans_dist_0.0001.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Show3d med tand2",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-v", "-a", "-r", "-d", "testdata/testobject/tand2/tand-nr2.stl"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-
-        {
-            "name": "Show3d med wand testfil and org",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "show3d.py",
-            "args": ["-v", "-a", "-d", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/trans/wand.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-          {
             "name": "Verbose Compare3d med dist testfiler",
             "type": "debugpy",
             "request": "launch",
@@ -115,15 +104,6 @@
             "request": "launch",
             "program": "conv3d.py",
             "args": ["-v", "-d", "-n", "1000000", "-u", "testdata/testobject/tand2/tand-nr2.stl", "testdata/testobject/tand2/test_object_1M.ply"],
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Mirror PointCloud",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "mirror3d.py",
-            "args": ["-v","testdata/testobject/render6/point_cloud2.ply", "testdata/testobject/render6/point_mirror.ply"],
             "console": "integratedTerminal",
             "justMyCode": true
         },
