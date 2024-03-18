@@ -32,6 +32,15 @@
             "justMyCode": true
         },
         {
+            "name": "Compare3d org med transformation trans rot distorted 0.001",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "prg/compare3d.py",
+            "args": ["-t", "-a","--histogram", "--output", "tmp/histo.png", "testdata/testobject/ph_obj/test_object_p1M.ply", "testdata/testobject/ph_obj/distort/rot_trans_dist_0.0001.ply"],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Info3d med LowerJawScan.stl",
             "type": "debugpy",
             "request": "launch",

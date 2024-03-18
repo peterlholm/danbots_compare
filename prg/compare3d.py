@@ -7,11 +7,15 @@ import open3d as o3d
 import numpy as np
 from matplotlib import pyplot as plt
 
+sys.path.append("/usr/local/lib")
+from lib3d import get_transformation
+from lib3d.registration import get_transformations, draw_registration_result  # pylint: disable=import-error
+
 _DEBUG = False
 _SHOW = False
 _VERBOSE = False
 
-MY = "µm"
+MYM = "µm"
 
 def mesh_size(mesh : o3d.geometry.TriangleMesh):
     "calculate average size of mesh"
@@ -81,6 +85,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='compare3d', description='Compare two 3d files and calculate error figures\n\nSee also conv3d, crop3d, info3d, mirror3d, show3d, trans3d, stitch3d')
     parser.add_argument('-d', required=False, help="Turn debug on", action='store_true' )
     parser.add_argument('-v', required=False, help="Give verbose output", action='store_true' )
+    parser.add_argument('-t', required=False, help="Register and Transform testfile before compare", action='store_true' )
     parser.add_argument('-s', required=False, help="Show output", action='store_true' )
     parser.add_argument('-a', required=False, help="Show axis", action='store_true' )
     parser.add_argument('--histogram', required=False, help="Generate Histogram", action='store_true' )
@@ -127,18 +132,36 @@ if __name__ == "__main__":
         print("Points in reference", len(in_pcl.points))
         print("Points in testfile", len(t_pcl.points))
 
+    if _SHOW:
+        show_pcls(in_pcl, t_pcl, axis=args.a, name="Org pointclouds")
+
+    if args.t:
+        if _VERBOSE:
+            print("Starting Registration")
+        target, transformation = get_transformations(in_pcl, t_pcl, verbose=_VERBOSE)
+
+        if _VERBOSE:
+            print("Registration result:")
+            print(transformation)
+        if _SHOW:
+            draw_registration_result(in_pcl, t_pcl, transformation=transformation)
+
+        if transformation is None:
+            print("Could not allign the two pointclouds")
+            sys.exit(2)
+
+        t_pcl = target.transform(transformation)
+
     rms, vmin, vmax, mean, distarr = cmp2pcl(in_pcl, t_pcl)
 
     if not args.script:
-        print(f"Point ABS distance Error: RMSE: {rms*1000000:.0f} {MY} MinE: {vmin*1000000:.0f} {MY} MaxE: {vmax*1000000:.0f} {MY} MeanE: {mean*1000000:.0f} {MY}")
+        print(f"Point ABS distance Error: RMSE: {rms*1000000:.0f} {MYM} MinE: {vmin*1000000:.0f} {MYM} MaxE: {vmax*1000000:.0f} {MYM} MeanE: {mean*1000000:.0f} {MYM}")
         if _DEBUG:
             print(f"Point ABS distance Error: RMS: {rms:.2e} m Min: {vmin:.2e} m Max: {vmax:.2e} m Mean: {mean:.2e} m")
         print(f"Point Rel distance Error: RMSE: {rms/obj_size*100:.3f}% MinE: {vmin/obj_size*100:.3f}% MaxE: {vmax/obj_size*100:.3f}% MeanE: {mean/obj_size*100:.3f}%")
     else:
         print(f"{rms:.6f} {vmin:.6f} {vmax:.6f} {mean:.6f} {rms/obj_size:.3f} {vmin/obj_size:.3f} {vmax/obj_size:.3f} {mean/obj_size:.3f}")
 
-    if _SHOW:
-        show_pcls(in_pcl, t_pcl, axis=args.a, name="Org pointclouds")
 
     if args.histogram or args.output:
         no_points = len(distarr)
@@ -155,10 +178,10 @@ if __name__ == "__main__":
         # We can set the number of bins with the *bins* keyword argument.
         axs.hist(dist_u, bins=10)
         axs.text(POS_X, POS_Y, f"No points: {no_points}",transform=axs.transAxes)
-        axs.text(POS_X, POS_Y+DY, f"RMSE: {rms*1000000:.0f} {MY}",transform=axs.transAxes)
-        axs.text(POS_X, POS_Y+2*DY, f"MaxE: {vmax*1000000:.0f} {MY}",transform=axs.transAxes)
-        axs.text(POS_X, POS_Y+3*DY, f"MinE: {vmin*1000000:.0f} {MY}",transform=axs.transAxes)
-        #axs.text(POS_X, POS_Y+4*DY, f"MeanE: {mean*1000000:.0f} {MY}",transform=axs.transAxes)
+        axs.text(POS_X, POS_Y+DY, f"RMSE: {rms*1000000:.0f} {MYM}",transform=axs.transAxes)
+        axs.text(POS_X, POS_Y+2*DY, f"MaxE: {vmax*1000000:.0f} {MYM}",transform=axs.transAxes)
+        axs.text(POS_X, POS_Y+3*DY, f"MinE: {vmin*1000000:.0f} {MYM}",transform=axs.transAxes)
+        #axs.text(POS_X, POS_Y+4*DY, f"MeanE: {mean*1000000:.0f} {MYM}",transform=axs.transAxes)
         #axs[1].hist(dist2, bins=n_bins)
         if args.histogram:
             plt.show()

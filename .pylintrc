@@ -11,7 +11,8 @@ logging-format-style=new
 
 enable=all
 
-disable=line-too-long
+disable=line-too-long,
+        locally-disabled
         #missing-function-docstring,
         #missing-module-docstring,
         #missing-class-docstring,
