@@ -144,19 +144,19 @@ if __name__ == "__main__":
             print("Performing rotation", (args.rx,args.ry,args.rz))
         outpcl = rotate(inpcl,(args.rx,args.ry,args.rz))
 
-    if isinstance(outpcl, o3d.cuda.pybind.geometry.PointCloud):
+    if isinstance(outpcl, o3d.geometry.PointCloud):
         o3d.io.write_point_cloud(str(args.out_file), outpcl)
-    elif isinstance(outpcl, o3d.cuda.pybind.geometry.TriangleMesh):
+    elif isinstance(outpcl, o3d.geometry.TriangleMesh):
         outpcl.compute_triangle_normals()
         o3d.io.write_triangle_mesh(str(args.out_file), outpcl)
     else:
         print("illegal output")
 
     if args.s:
-        if isinstance(outpcl, o3d.cuda.pybind.geometry.PointCloud):
+        if isinstance(outpcl, o3d.geometry.PointCloud):
             if not outpcl.has_normals():
                 outpcl.compute_normals()
-        elif isinstance(outpcl, o3d.cuda.pybind.geometry.TriangleMesh):
+        elif isinstance(outpcl, o3d.geometry.TriangleMesh):
             if not outpcl.has_triangle_normals():
                 outpcl.compute_triangle_normals()
         else:

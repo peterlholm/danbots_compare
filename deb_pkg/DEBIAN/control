@@ -1,9 +1,9 @@
-Package: danbots-3d-tools
-Version: 1.0.3
+Package: danbots-tools-3dtools
+Version: 1.1.0-2
 Architecture: all
 Maintainer: Peter Holm <peter@lL-Holm.dk>
-Depends: python3 (>=3.8)
-Section: 3d/utils
+Depends: python3 (>=3.8), danbots-tools-lib3d
+Section: tools/danbots
 Priority: optional
 Description: Tools for handling 3D point clouds.
  The package include the following tools:

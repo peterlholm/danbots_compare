@@ -1,6 +1,6 @@
 # makefile for compare_pcl
 
-VERSION=1.1.0-1
+VERSION=1.1.0-2
 PKG_NAME=danbots-3d-tools-$(VERSION)
 PKG_FOLDER=tmp/package
 
